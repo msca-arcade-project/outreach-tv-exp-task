@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Lean</title>
-<link rel="stylesheet" href="../shared/style.css?v=4" />
+<link rel="stylesheet" href="../shared/style.css?v=5" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -32,12 +32,12 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/task-engine.js?v=4"></script>
-  <script src="../shared/progress-readout.js?v=4"></script>
-  <script src="../shared/results-screen.js?v=4"></script>
-  <script src="../shared/sketch-core.js?v=4"></script>
-  <script src="../shared/autoplay.js?v=4"></script>
-  <script src="distractor.js?v=4"></script>
+  <script src="../shared/task-engine.js?v=5"></script>
+  <script src="../shared/progress-readout.js?v=5"></script>
+  <script src="../shared/results-screen.js?v=5"></script>
+  <script src="../shared/sketch-core.js?v=5"></script>
+  <script src="../shared/autoplay.js?v=5"></script>
+  <script src="distractor.js?v=5"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -48,6 +48,13 @@
       totalItems: 40,
       targetProbability: 0.3,
     };
+
+    const params = new URLSearchParams(window.location.search);
+
+    // ?trials=N overrides the trial count for both normal play and autoplay
+    // (autoplay's own default of 20 included) without editing ENGINE_OPTIONS.
+    const trialsParam = parseInt(params.get('trials'), 10);
+    const trialsOverride = Number.isInteger(trialsParam) && trialsParam > 0 ? trialsParam : null;
 
     function begin(condition, { engineOptions = ENGINE_OPTIONS, onEngineReady } = {}) {
       document.getElementById('start-screen').style.display = 'none';
@@ -74,10 +81,12 @@
         },
       });
     }
-    document.getElementById('start-distracted').addEventListener('click', () => begin('distracted'));
-    document.getElementById('start-undistracted').addEventListener('click', () => begin('undistracted'));
-
-    const params = new URLSearchParams(window.location.search);
+    document.getElementById('start-distracted').addEventListener('click', () => begin('distracted', {
+      engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
+    }));
+    document.getElementById('start-undistracted').addEventListener('click', () => begin('undistracted', {
+      engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
+    }));
 
     // Dev-only shortcut: ?debugResults=1 jumps straight to the two-column
     // comparison view with fixed sample numbers, so the results screen can
@@ -101,7 +110,7 @@
     const autoplayCondition = params.get('autoplay');
     if (autoplayCondition === 'distracted' || autoplayCondition === 'undistracted') {
       begin(autoplayCondition, {
-        engineOptions: { ...ENGINE_OPTIONS, totalItems: 20 },
+        engineOptions: { ...ENGINE_OPTIONS, totalItems: trialsOverride ?? 20 },
         onEngineReady: (engine) => startAutoResponder(engine),
       });
     }
