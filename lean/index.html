@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARCADE outreach task &ndash; Lean</title>
+<link rel="stylesheet" href="../shared/style.css?v=3" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <div id="start-screen">
+    <h1>Target: vowel &ndash; press the right arrow.<br />Non-target: consonant &ndash; press the left arrow.</h1>
+    <div>
+      <button id="start-distracted">Start (with distraction)</button>
+      <button id="start-undistracted">Start (no distraction)</button>
+    </div>
+  </div>
+
+  <div id="task-screen" style="display: none;">
+    <div id="progress-panel">
+      <div class="label" id="progress-label">CORRECT</div>
+      <div class="value" id="progress-value">0 / 40</div>
+      <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+    </div>
+    <div id="stream-canvas-holder"></div>
+    <div id="distractor-panel"></div>
+    <div id="key-hints">
+      <span class="non-target">&larr; CONSONANT</span>
+      <span class="target">VOWEL &rarr;</span>
+    </div>
+  </div>
+
+  <div id="results-screen"></div>
+
+  <script src="../shared/task-engine.js?v=3"></script>
+  <script src="../shared/progress-readout.js?v=3"></script>
+  <script src="../shared/results-screen.js?v=3"></script>
+  <script src="../shared/sketch-core.js?v=3"></script>
+  <script src="distractor.js?v=3"></script>
+  <script>
+    // Named here, not left as buried defaults inside task-engine.js, so the
+    // scroll rate (and the other stream parameters) can be tuned per page
+    // without reading the engine's source.
+    const ENGINE_OPTIONS = {
+      scrollSpeedPxPerSec: 120, // vertical scroll speed of the stream
+      itemSpacingPx: 140,       // vertical gap between consecutive items
+      totalItems: 40,
+      targetProbability: 0.3,
+    };
+
+    function begin(condition) {
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('task-screen').style.display = 'block';
+      if (condition !== 'distracted') {
+        document.getElementById('distractor-panel').style.display = 'none';
+      }
+      const progressReadout = new ProgressReadout({
+        labelEl: document.getElementById('progress-label'),
+        valueEl: document.getElementById('progress-value'),
+        barFillEl: document.getElementById('progress-bar-fill'),
+      });
+      startStreamTask({
+        canvasHolderId: 'stream-canvas-holder',
+        condition,
+        progressReadout,
+        engineOptions: ENGINE_OPTIONS,
+        startDistractor: startLeanDistractor,
+        stopDistractor: stopLeanDistractor,
+        onFinish: (engine) => {
+          document.getElementById('task-screen').style.display = 'none';
+          renderResultsScreen(document.getElementById('results-screen'), condition, engine);
+        },
+      });
+    }
+    document.getElementById('start-distracted').addEventListener('click', () => begin('distracted'));
+    document.getElementById('start-undistracted').addEventListener('click', () => begin('undistracted'));
+
+    // Dev-only shortcut: ?debugResults=1 jumps straight to the two-column
+    // comparison view with fixed sample numbers, so the results screen can
+    // be checked without playing through the task first. No effect unless
+    // that query param is present.
+    if (new URLSearchParams(window.location.search).has('debugResults')) {
+      document.getElementById('start-screen').style.display = 'none';
+      saveRunResult('undistracted', { correctCount: 39, incorrectCount: 1, missedCount: 0, totalItems: 40, meanRtMs: 275 });
+      renderResultsScreen(
+        document.getElementById('results-screen'),
+        'distracted',
+        { correctCount: 35, incorrectCount: 3, missedCount: 2, totalItems: 40, meanRtMs: 900 }
+      );
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+:root {
+  --bg: #808080;
+  --text: #ffffff;
+  --accent-blue: #5b7fe0;
+  --accent-orange: #ffa500;
+  --panel-border: rgba(255, 255, 255, 0.4);
+  --distractor-height: 160px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+#start-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  text-align: center;
+  padding: 0 32px;
+}
+#start-screen h1 { font-size: 22px; font-weight: normal; line-height: 1.5; }
+#start-screen button { font-size: 18px; padding: 12px 28px; margin: 0 8px; cursor: pointer; }
+
+#task-screen { position: fixed; inset: 0; }
+
+#progress-panel {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 2px solid var(--panel-border);
+  padding: 12px 32px;
+  text-align: center;
+  z-index: 2;
+}
+#progress-panel .label { font-size: 14px; letter-spacing: 2px; opacity: 0.85; }
+#progress-panel .value { font-size: 28px; font-weight: bold; margin-top: 4px; }
+#progress-bar-track {
+  width: 220px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+#progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-blue);
+  transition: width 0.15s linear;
+}
+
+#stream-canvas-holder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: var(--distractor-height);
+}
+
+#distractor-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--distractor-height);
+  border-top: 2px solid var(--panel-border);
+  padding: 16px;
+  box-sizing: border-box;
+  font-size: 16px;
+  line-height: 1.4;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: transparent;
+  transition: background-color 0.4s ease-out;
+}
+#distractor-panel.flashing {
+  background-color: #000;
+  transition: none;
+}
+
+#key-hints {
+  position: fixed;
+  bottom: calc(var(--distractor-height) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 48px;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 2;
+}
+#key-hints .non-target { color: var(--accent-blue); }
+#key-hints .target { color: var(--accent-orange); }
+
+#results-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  color: var(--text);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+#results-screen.visible { display: flex; }
+
+.results-columns {
+  display: flex;
+  gap: 96px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.results-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.results-column h2 {
+  font-size: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+.pie-chart {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--panel-border);
+}
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  align-items: flex-start;
+}
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+.swatch.correct { background: #2ecc71; }
+.swatch.error { background: #e74c3c; }
+.rt-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.rt-heading {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+  opacity: 0.9;
+}
+/* Both side labels get an equal, fixed-width slot that's part of the wrap's
+   own flex layout (not absolutely-positioned overflow) -- so the wrap's
+   width is its true rendered footprint, and the track still lands centered
+   within it because the two slots are the same width. That true footprint
+   is what the .results-columns gap is sized against, so columns no longer
+   overlap regardless of label text length. */
+.rt-bar-wrap {
+  display: flex;
+  align-items: center;
+  height: 14px;
+}
+.rt-bar-track {
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-radius: 3px;
+  background: transparent;
+  box-sizing: content-box;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+.rt-bar-fill {
+  height: 100%;
+  background: var(--accent-blue);
+}
+.rt-label {
+  flex: 0 0 auto;
+  text-align: right;
+  padding-right: 10px;
+  box-sizing: border-box;
+  font-size: 13px;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+.rt-scale-label {
+  flex: 0 0 auto;
+  text-align: left;
+  padding-left: 8px;
+  box-sizing: border-box;
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.results-hint { opacity: 0.85; font-size: 14px; max-width: 420px; text-align: center; }
+#restart-btn { font-size: 16px; padding: 10px 24px; cursor: pointer; margin-top: 8px; }

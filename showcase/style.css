@@ -1,0 +1,53 @@
+/* showcase/style.css -- styling specific to Alternative B's distractor card.
+   Loaded in addition to shared/style.css, never instead of it. */
+
+#distractor-panel.showcase { padding: 0; overflow: hidden; }
+
+.showcase-track {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.showcase-card {
+  width: 55%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: white;
+  text-align: center;
+  animation: showcase-pop 0.35s ease-out;
+}
+.showcase-emoji { font-size: 40px; margin-bottom: 6px; }
+.showcase-headline { font-size: 16px; font-weight: bold; }
+
+@keyframes showcase-pop {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Flicker: each movable item (emoji, headline) gets its own random-angle
+   axis, set as --flicker-x/--flicker-y by distractor.js, and snaps between
+   the +displacement and -displacement positions with no interpolation --
+   steps(1, end) is what makes this read as a flicker rather than a drift.
+   Lives on the item itself, not the card, so it never fights the card's own
+   pop-in animation above (different elements, no shared `transform`). */
+.flicker {
+  animation-name: flicker-item;
+  animation-duration: var(--flicker-period, 0.15s);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+}
+@keyframes flicker-item {
+  0%, 49% {
+    transform: translate(var(--flicker-x, 0px), var(--flicker-y, 0px));
+  }
+  50%, 100% {
+    transform: translate(calc(-1 * var(--flicker-x, 0px)), calc(-1 * var(--flicker-y, 0px)));
+  }
+}
