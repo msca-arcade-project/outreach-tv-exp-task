@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Showcase</title>
-<link rel="stylesheet" href="../shared/style.css?v=3" />
-<link rel="stylesheet" href="style.css?v=3" />
+<link rel="stylesheet" href="../shared/style.css?v=4" />
+<link rel="stylesheet" href="style.css?v=4" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -33,11 +33,12 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/task-engine.js?v=3"></script>
-  <script src="../shared/progress-readout.js?v=3"></script>
-  <script src="../shared/results-screen.js?v=3"></script>
-  <script src="../shared/sketch-core.js?v=3"></script>
-  <script src="distractor.js?v=3"></script>
+  <script src="../shared/task-engine.js?v=4"></script>
+  <script src="../shared/progress-readout.js?v=4"></script>
+  <script src="../shared/results-screen.js?v=4"></script>
+  <script src="../shared/sketch-core.js?v=4"></script>
+  <script src="../shared/autoplay.js?v=4"></script>
+  <script src="distractor.js?v=4"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -49,7 +50,7 @@
       targetProbability: 0.3,
     };
 
-    function begin(condition) {
+    function begin(condition, { engineOptions = ENGINE_OPTIONS, onEngineReady } = {}) {
       document.getElementById('start-screen').style.display = 'none';
       document.getElementById('task-screen').style.display = 'block';
       if (condition !== 'distracted') {
@@ -64,7 +65,8 @@
         canvasHolderId: 'stream-canvas-holder',
         condition,
         progressReadout,
-        engineOptions: ENGINE_OPTIONS,
+        engineOptions,
+        onEngineReady,
         startDistractor: startShowcaseDistractor,
         stopDistractor: stopShowcaseDistractor,
         onFinish: (engine) => {
@@ -76,11 +78,13 @@
     document.getElementById('start-distracted').addEventListener('click', () => begin('distracted'));
     document.getElementById('start-undistracted').addEventListener('click', () => begin('undistracted'));
 
+    const params = new URLSearchParams(window.location.search);
+
     // Dev-only shortcut: ?debugResults=1 jumps straight to the two-column
     // comparison view with fixed sample numbers, so the results screen can
     // be checked without playing through the task first. No effect unless
     // that query param is present.
-    if (new URLSearchParams(window.location.search).has('debugResults')) {
+    if (params.has('debugResults')) {
       document.getElementById('start-screen').style.display = 'none';
       saveRunResult('undistracted', { correctCount: 39, incorrectCount: 1, missedCount: 0, totalItems: 40, meanRtMs: 275 });
       renderResultsScreen(
@@ -88,6 +92,19 @@
         'distracted',
         { correctCount: 35, incorrectCount: 3, missedCount: 2, totalItems: 40, meanRtMs: 900 }
       );
+    }
+
+    // Dev-only shortcut: ?autoplay=distracted or ?autoplay=undistracted runs
+    // the task hands-free with correct, human-plausible-delay responses, at
+    // a short 20 items -- for recording a clean, repeatable demo video
+    // instead of relying on live keypresses. No effect unless the param is
+    // present and set to one of those two values.
+    const autoplayCondition = params.get('autoplay');
+    if (autoplayCondition === 'distracted' || autoplayCondition === 'undistracted') {
+      begin(autoplayCondition, {
+        engineOptions: { ...ENGINE_OPTIONS, totalItems: 20 },
+        onEngineReady: (engine) => startAutoResponder(engine),
+      });
     }
   </script>
 </body>

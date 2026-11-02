@@ -12,6 +12,7 @@ function startStreamTask({
   startDistractor,
   stopDistractor,
   engineOptions = {},
+  onEngineReady, // optional: (engine) => void, called once the engine exists -- used by autoplay to attach its auto-responder
 }) {
   let engine;
   let holder;
@@ -23,6 +24,7 @@ function startStreamTask({
       canvas.parent(canvasHolderId);
       engine = new TaskEngine({ ...engineOptions, canvasHeight: holder.clientHeight });
       if (condition === 'distracted' && startDistractor) startDistractor();
+      if (onEngineReady) onEngineReady(engine);
     };
 
     p.windowResized = () => {
