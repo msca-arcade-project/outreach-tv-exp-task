@@ -84,15 +84,12 @@ function renderResultsScreen(containerEl, condition, engine) {
   const columns = [resultsColumnHtml(condition, mine)];
   if (other) columns.push(resultsColumnHtml(otherCondition(condition), other));
 
-  const otherLabel = STRINGS.conditionLabel[otherCondition(condition)] ?? otherCondition(condition);
-
   containerEl.innerHTML = `
-    <h1>${STRINGS.resultsHeadingGeneric}</h1>
-    <div class="results-columns">${columns.join('')}</div>
-    <p class="results-hint">${other
-      ? STRINGS.resultsHintBoth
-      : STRINGS.resultsHintSingle(otherLabel)}</p>
-    <button id="restart-btn">${STRINGS.restartButton}</button>
+    <div class="results-scale-wrap">
+      <h1>${STRINGS.resultsHeadingGeneric}</h1>
+      <div class="results-columns">${columns.join('')}</div>
+      <button id="restart-btn">${STRINGS.restartButton}</button>
+    </div>
   `;
   containerEl.classList.add('visible');
   document.getElementById('restart-btn').addEventListener('click', () => {

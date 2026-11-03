@@ -69,6 +69,17 @@ html, body {
   right: 0;
   bottom: 0;
 }
+/* Static alpha mask so stream letters fade in/out near the canvas's top and
+   bottom edges instead of popping abruptly in/out right behind the progress
+   panel and key-hints text, which both sit close to those edges. Masking the
+   canvas itself (rather than drawing the fade in p5) needs no per-frame
+   logic and no task-engine/sketch-core changes -- items already spawn/get
+   removed at the same y thresholds, this only changes how they're painted
+   near the edges. */
+#stream-canvas-holder canvas {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+}
 
 /* Notifications float in one of six fixed screen-edge zones rather than a
    single persistent bar, so they appear in varied locations (TV feedback)
@@ -128,10 +139,19 @@ html, body {
   display: none;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  gap: 16px;
 }
 #results-screen.visible { display: flex; }
+/* Scaling this inner wrapper, not #results-screen itself, keeps the
+   wrapper's own flex layout (its gap, its children's sizing) untouched by
+   the transform -- #results-screen just centers it in the viewport as
+   before, at whatever size it ends up after scaling. */
+.results-scale-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  transform: scale(1.2);
+}
 
 .results-columns {
   display: flex;
@@ -170,7 +190,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 14px;
+  font-size: 20px;
   align-items: flex-start;
 }
 .swatch {
@@ -207,12 +227,12 @@ html, body {
 .rt-bar-wrap {
   display: flex;
   align-items: center;
-  height: 14px;
+  height: 32px;
 }
 .rt-bar-track {
-  height: 14px;
+  height: 32px;
   border: 2px solid #ffffff;
-  border-radius: 3px;
+  border-radius: 4px;
   background: transparent;
   box-sizing: content-box;
   overflow: hidden;
@@ -237,10 +257,9 @@ html, body {
   text-align: left;
   padding-left: 8px;
   box-sizing: border-box;
-  font-size: 11px;
+  font-size: 18px;
   opacity: 0.75;
   white-space: nowrap;
 }
 
-.results-hint { opacity: 0.85; font-size: 14px; max-width: 420px; text-align: center; }
 #restart-btn { font-size: 16px; padding: 10px 24px; cursor: pointer; margin-top: 8px; }

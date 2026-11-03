@@ -18,8 +18,5 @@ const STRINGS = {
   pieCorrectLabel: 'correctes',
   pieErrorLabel: 'erreurs',
   rtHeading: 'TEMPS DE RÉPONSE',
-  resultsHintBoth: 'Les deux conditions ont été jouées sur cet appareil – comparaison ci-dessus.',
-  resultsHintSingle: (otherLabel) =>
-    `Lancez la condition « ${otherLabel} » sur cet appareil pour voir une comparaison côte à côte.`,
   restartButton: 'Recommencer',
 };
