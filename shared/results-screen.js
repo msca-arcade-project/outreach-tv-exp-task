@@ -6,38 +6,58 @@
 // mean-response-time bar whose length is directly proportional to time.
 
 const RESULTS_KEY = 'outreach-tv-task-results';
-// The pie is two overlapping solid-stroke SVG circles (stroke-width equal to
-// the radius, so each stroke fills all the way to the center), not a CSS
-// conic-gradient -- a conic-gradient with a hard color stop, clipped by
-// border-radius:50%, is a known source of thin rasterization-seam artifacts
-// at the circular clip boundary in some browsers. Two plain circle strokes
-// have no gradient to rasterize and no seam to get wrong.
+// The pie is an SVG filled wedge (M center -> L arc-start -> A -> arc-end ->
+// Z), not a CSS conic-gradient -- a conic-gradient with a hard color stop,
+// clipped by border-radius:50%, is a known source of thin rasterization-seam
+// artifacts at the circular clip boundary in some browsers.
+//
+// An earlier version of this used two overlapping stroke-dasharray circles
+// with stroke-width = 2x radius (a common "fake a solid pie from a donut"
+// trick) instead -- that produced a skewed, off-center boundary rather than
+// a clean wedge: a dash segment's cut ends are flat cuts perpendicular to
+// the path's tangent at the (small) centerline radius, not lines radiating
+// from the true center, and that only reads correctly for a genuinely thin
+// ring. An explicit filled path has no such hidden assumption -- its two
+// straight edges are drawn from the center by construction.
 const PIE_DIAMETER = 120;
-const PIE_RADIUS = PIE_DIAMETER / 4; // stroke-width below is 2x this, reaching the center
-const PIE_CIRCUMFERENCE = 2 * Math.PI * PIE_RADIUS;
+
+// Point on the pie's circumference at `pct` percent clockwise from 12
+// o'clock (matching the conic-gradient convention this replaced).
+function pieEdgePoint(center, radius, pct) {
+  const angleRad = (pct / 100) * 2 * Math.PI;
+  return {
+    x: center + radius * Math.sin(angleRad),
+    y: center - radius * Math.cos(angleRad),
+  };
+}
 
 function pieChartSvg(correctPct) {
-  const greenLen = PIE_CIRCUMFERENCE * (correctPct / 100);
-  const redLen = PIE_CIRCUMFERENCE - greenLen;
   const center = PIE_DIAMETER / 2;
-  // The colored fill (stroke-width 2x radius) reaches exactly to the edge of
-  // this viewBox and no further. The neutral ring is a plain CSS border on
-  // this <svg> element (see .pie-chart in shared/style.css), which -- under
-  // the default content-box sizing -- sits entirely OUTSIDE this box, not
-  // overlapping the fill. An SVG circle drawn at the edge for the border
-  // instead would overlap the colored strokes and reintroduce the same
-  // translucent-border-blends-with-the-fill bleed this replaced.
-  return `
-    <svg class="pie-chart" viewBox="0 0 ${PIE_DIAMETER} ${PIE_DIAMETER}" width="${PIE_DIAMETER}" height="${PIE_DIAMETER}">
-      <circle cx="${center}" cy="${center}" r="${PIE_RADIUS}" fill="none"
-        stroke="var(--accent-green)" stroke-width="${PIE_RADIUS * 2}" />
-      <circle cx="${center}" cy="${center}" r="${PIE_RADIUS}" fill="none"
-        stroke="var(--accent-red)" stroke-width="${PIE_RADIUS * 2}"
-        stroke-dasharray="${redLen.toFixed(3)} ${greenLen.toFixed(3)}"
-        stroke-dashoffset="${(-greenLen).toFixed(3)}"
-        transform="rotate(-90 ${center} ${center})" />
-    </svg>
-  `;
+  const radius = center;
+  const openTag = `<svg class="pie-chart" viewBox="0 0 ${PIE_DIAMETER} ${PIE_DIAMETER}" width="${PIE_DIAMETER}" height="${PIE_DIAMETER}">`;
+
+  // A single-arc path can't represent a full 360deg sweep (its start and end
+  // point coincide, which most renderers treat as empty) -- the 0%/100%
+  // cases are genuinely solid single-color circles, not degenerate wedges.
+  if (correctPct <= 0) {
+    return `${openTag}<circle cx="${center}" cy="${center}" r="${radius}" fill="var(--accent-red)" /></svg>`;
+  }
+  if (correctPct >= 100) {
+    return `${openTag}<circle cx="${center}" cy="${center}" r="${radius}" fill="var(--accent-green)" /></svg>`;
+  }
+
+  // Green is the full base circle; the red wedge (correctPct -> 100%) is
+  // drawn on top, so only the error slice needs the arc math.
+  const start = pieEdgePoint(center, radius, correctPct);
+  const end = pieEdgePoint(center, radius, 100);
+  const largeArcFlag = (100 - correctPct) > 50 ? 1 : 0;
+  const redPath = `M ${center},${center} L ${start.x.toFixed(3)},${start.y.toFixed(3)} `
+    + `A ${radius},${radius} 0 ${largeArcFlag} 1 ${end.x.toFixed(3)},${end.y.toFixed(3)} Z`;
+
+  return `${openTag}`
+    + `<circle cx="${center}" cy="${center}" r="${radius}" fill="var(--accent-green)" />`
+    + `<path d="${redPath}" fill="var(--accent-red)" />`
+    + `</svg>`;
 }
 const RT_PX_PER_SECOND = 200; // bar-length scale: 1000ms of mean RT = 200px
 // Reserved width for each side label (ms value, "1s"), equal on both sides so
