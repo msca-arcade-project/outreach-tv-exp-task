@@ -4,7 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Lean</title>
-<link rel="stylesheet" href="../shared/style.css?v=6" />
+<link rel="stylesheet" href="../shared/style.css?v=7" />
+<link rel="stylesheet" href="style.css?v=7" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -23,7 +24,7 @@
       <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
     </div>
     <div id="stream-canvas-holder"></div>
-    <div id="distractor-panel"></div>
+    <div id="distractor-layer"></div>
     <div id="key-hints">
       <span class="non-target">&larr; CONSONNE</span>
       <span class="target">VOYELLE &rarr;</span>
@@ -32,13 +33,14 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=6"></script>
-  <script src="../shared/task-engine.js?v=6"></script>
-  <script src="../shared/progress-readout.js?v=6"></script>
-  <script src="../shared/results-screen.js?v=6"></script>
-  <script src="../shared/sketch-core.js?v=6"></script>
-  <script src="../shared/autoplay.js?v=6"></script>
-  <script src="distractor.js?v=6"></script>
+  <script src="../shared/strings.js?v=7"></script>
+  <script src="../shared/task-engine.js?v=7"></script>
+  <script src="../shared/progress-readout.js?v=7"></script>
+  <script src="../shared/results-screen.js?v=7"></script>
+  <script src="../shared/sketch-core.js?v=7"></script>
+  <script src="../shared/autoplay.js?v=7"></script>
+  <script src="../shared/notifications.js?v=7"></script>
+  <script src="distractor.js?v=7"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -60,9 +62,6 @@
     function begin(condition, { engineOptions = ENGINE_OPTIONS, onEngineReady } = {}) {
       document.getElementById('start-screen').style.display = 'none';
       document.getElementById('task-screen').style.display = 'block';
-      if (condition !== 'distracted') {
-        document.getElementById('distractor-panel').style.display = 'none';
-      }
       const progressReadout = new ProgressReadout({
         labelEl: document.getElementById('progress-label'),
         valueEl: document.getElementById('progress-value'),

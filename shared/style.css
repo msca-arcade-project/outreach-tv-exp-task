@@ -6,7 +6,6 @@
   --accent-red: #ff5555;
   --accent-green: #2ecc71;
   --panel-border: rgba(255, 255, 255, 0.4);
-  --distractor-height: 160px;
 }
 
 html, body {
@@ -68,36 +67,41 @@ html, body {
   left: 0;
   top: 0;
   right: 0;
-  bottom: var(--distractor-height);
+  bottom: 0;
 }
 
-#distractor-panel {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--distractor-height);
-  border-top: 2px solid var(--panel-border);
-  padding: 16px;
+/* Notifications float in one of six fixed screen-edge zones rather than a
+   single persistent bar, so they appear in varied locations (TV feedback)
+   without ever reaching into the center decision column or the top-center
+   progress panel -- both of which sit on the horizontal center, so staying
+   out of the left/right margins keeps them clear by construction, no
+   collision detection needed. #distractor-layer (the mount point) carries
+   no styling of its own.
+
+   Each zone class belongs on a small WRAPPER element, not on the visible
+   notification itself -- shared/notifications.js's mountNotif() creates
+   that wrapper. The mid-left/mid-right zones need `transform:
+   translateY(-50%)` to vertical-center, and showcase's card has its own
+   transform-based pop-in animation; putting both transforms on one element
+   would have the animation silently override the positioning the instant it
+   plays (the same class of conflict the project already solved once for
+   showcase's flicker vs. its pop-in -- different elements, no shared
+   `transform`). */
+.notif-zone-top-left    { position: fixed; top: 24px; left: 24px; z-index: 3; }
+.notif-zone-top-right   { position: fixed; top: 24px; right: 24px; z-index: 3; }
+.notif-zone-mid-left    { position: fixed; top: 50%; left: 24px; transform: translateY(-50%); z-index: 3; }
+.notif-zone-mid-right   { position: fixed; top: 50%; right: 24px; transform: translateY(-50%); z-index: 3; }
+.notif-zone-bottom-left { position: fixed; bottom: 24px; left: 24px; z-index: 3; }
+.notif-zone-bottom-right{ position: fixed; bottom: 24px; right: 24px; z-index: 3; }
+
+.notif {
+  max-width: min(300px, 20vw);
   box-sizing: border-box;
-  font-size: 16px;
-  line-height: 1.4;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background-color: transparent;
-  transition: background-color 0.4s ease-out;
-}
-#distractor-panel.flashing {
-  background-color: #000;
-  transition: none;
 }
 
 #key-hints {
   position: fixed;
-  bottom: calc(var(--distractor-height) + 16px);
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;

@@ -1,0 +1,17 @@
+/* lean/style.css -- styling specific to Alternative A's notification bubble.
+   Loaded in addition to shared/style.css, never instead of it. */
+
+.notif--bubble {
+  background: #2b2f33;
+  color: var(--text);
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.4s ease-out;
+}
+.notif--bubble.flashing {
+  background-color: #000;
+  transition: none;
+}

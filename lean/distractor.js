@@ -1,6 +1,8 @@
-// lean/distractor.js -- Alternative A: scrolling text-feed distractor.
-// Self-authored trivia only, same spirit as the main experiment's feed.js --
-// see todo.md's content constraint.
+// lean/distractor.js -- Alternative A: a "text message" style notification
+// bubble that appears in a different screen-edge zone each time (shared
+// positioning logic in shared/notifications.js), rather than one persistent
+// bar. Self-authored trivia only, same spirit as the main experiment's
+// feed.js -- see todo.md's content constraint.
 
 const LEAN_FEED_ITEMS = [
   'Un jour sur Vénus dure plus longtemps qu’une année vénusienne.',
@@ -13,27 +15,20 @@ const LEAN_FEED_ITEMS = [
 ];
 
 let leanFeedTimer = null;
-
-// Arrival cue matching the main experiment's DistractorPanel.flash(): the
-// panel background inverts to black for an instant, then eases back --
-// rather than toggling visibility, a double rAF lets the browser paint the
-// instant "flashing" state before the CSS transition eases it away.
-function flashDistractorPanel(panel) {
-  panel.classList.add('flashing');
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      panel.classList.remove('flashing');
-    });
-  });
-}
+let leanLastWrapper = null;
+let leanLastZoneId = null;
 
 function startLeanDistractor() {
-  const panel = document.getElementById('distractor-panel');
-  panel.textContent = '';
+  const layer = document.getElementById('distractor-layer');
   let i = 0;
   const show = () => {
-    panel.textContent = LEAN_FEED_ITEMS[i % LEAN_FEED_ITEMS.length];
-    flashDistractorPanel(panel);
+    if (leanLastWrapper) leanLastWrapper.remove();
+    leanLastZoneId = pickNotifZone(leanLastZoneId);
+    const bubble = document.createElement('div');
+    bubble.className = 'notif notif--bubble';
+    bubble.textContent = LEAN_FEED_ITEMS[i % LEAN_FEED_ITEMS.length];
+    leanLastWrapper = mountNotif(layer, leanLastZoneId, bubble);
+    flashNotif(bubble);
     i += 1;
   };
   show();
@@ -43,4 +38,7 @@ function startLeanDistractor() {
 function stopLeanDistractor() {
   if (leanFeedTimer) clearInterval(leanFeedTimer);
   leanFeedTimer = null;
+  if (leanLastWrapper) leanLastWrapper.remove();
+  leanLastWrapper = null;
+  leanLastZoneId = null;
 }

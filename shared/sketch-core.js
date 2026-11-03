@@ -1,8 +1,8 @@
 // shared/sketch-core.js
 // The one p5 sketch both alternatives share: renders the scrolling
 // vowel/consonant stream and wires arrow-key responses to a TaskEngine. Each
-// alternative supplies only its own distractor-panel content
-// (startDistractor/stopDistractor); this file never touches that panel.
+// alternative supplies only its own distractor-layer content
+// (startDistractor/stopDistractor); this file never touches that layer.
 
 function startStreamTask({
   canvasHolderId,

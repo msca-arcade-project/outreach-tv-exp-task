@@ -34,24 +34,32 @@ function applyFlicker(el) {
 
 let showcaseTimer = null;
 let showcaseIndex = 0;
+let showcaseLastWrapper = null;
+let showcaseLastZoneId = null;
 
+// Shape follows position, per the TV feedback: oblong at the bottom, square
+// at any of the four non-bottom zones (treated as "beside the stream").
 function startShowcaseDistractor() {
-  const panel = document.getElementById('distractor-panel');
-  panel.classList.add('showcase');
+  const layer = document.getElementById('distractor-layer');
   const render = () => {
+    if (showcaseLastWrapper) showcaseLastWrapper.remove();
+    showcaseLastZoneId = pickNotifZone(showcaseLastZoneId);
+    const shapeClass = isBottomZone(showcaseLastZoneId) ? 'notif--ad-oblong' : 'notif--ad-square';
     const card = SHOWCASE_CARDS[showcaseIndex % SHOWCASE_CARDS.length];
-    panel.innerHTML = `
-      <div class="showcase-track">
-        <div class="showcase-card" style="background:${card.colour}">
-          <div class="showcase-emoji">${card.emoji}</div>
-          <div class="showcase-headline">${card.headline}</div>
-        </div>
-      </div>
+
+    const cardEl = document.createElement('div');
+    cardEl.className = `notif showcase-card ${shapeClass}`;
+    cardEl.style.background = card.colour;
+    cardEl.innerHTML = `
+      <div class="showcase-emoji">${card.emoji}</div>
+      <div class="showcase-headline">${card.headline}</div>
     `;
+    showcaseLastWrapper = mountNotif(layer, showcaseLastZoneId, cardEl);
+
     // Each movable item gets its own independently random axis -- the emoji
     // and the headline flicker on different diagonals, not in lockstep.
-    applyFlicker(panel.querySelector('.showcase-emoji'));
-    applyFlicker(panel.querySelector('.showcase-headline'));
+    applyFlicker(cardEl.querySelector('.showcase-emoji'));
+    applyFlicker(cardEl.querySelector('.showcase-headline'));
     showcaseIndex += 1;
   };
   render();
@@ -61,6 +69,7 @@ function startShowcaseDistractor() {
 function stopShowcaseDistractor() {
   if (showcaseTimer) clearInterval(showcaseTimer);
   showcaseTimer = null;
-  const panel = document.getElementById('distractor-panel');
-  panel.classList.remove('showcase');
+  if (showcaseLastWrapper) showcaseLastWrapper.remove();
+  showcaseLastWrapper = null;
+  showcaseLastZoneId = null;
 }
