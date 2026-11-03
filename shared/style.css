@@ -196,19 +196,15 @@ html, body {
   align-items: center;
   gap: 18px;
 }
+/* The pie's own colored fill is drawn entirely inside this SVG's viewBox
+   (see pieChartSvg() in results-screen.js) and reaches exactly to its edge,
+   not beyond -- so this border, under default content-box sizing, sits
+   cleanly outside that fill with no overlap and nothing to bleed into. */
 .pie-chart {
   width: 120px;
   height: 120px;
   border-radius: 50%;
   border: 2px solid var(--panel-border);
-  /* A background paints under the border by default, and the border color
-     here is translucent -- without this, the border shows whatever fill
-     color sits beneath it, tinting it per-segment (a pink-ish ring over the
-     red slice, minty over the green) instead of reading as a clean neutral
-     ring. Clipping the background to the padding box keeps the conic
-     gradient inside the border's inner edge, so the border only ever shows
-     the page's own black background through it. */
-  background-clip: padding-box;
   flex: 0 0 auto;
 }
 .pie-legend {

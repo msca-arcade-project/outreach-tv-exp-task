@@ -2,10 +2,43 @@
 // Stores each finished run's stats in sessionStorage under its condition
 // ('distracted' / 'undistracted') so a second run on the same device, in
 // either alternative, can be compared side by side with no backend. Renders
-// each condition as a correct/error pie (CSS conic-gradient, green/red) plus
-// a mean-response-time bar whose length is directly proportional to time.
+// each condition as a correct/error pie (SVG, green/red) plus a
+// mean-response-time bar whose length is directly proportional to time.
 
 const RESULTS_KEY = 'outreach-tv-task-results';
+// The pie is two overlapping solid-stroke SVG circles (stroke-width equal to
+// the radius, so each stroke fills all the way to the center), not a CSS
+// conic-gradient -- a conic-gradient with a hard color stop, clipped by
+// border-radius:50%, is a known source of thin rasterization-seam artifacts
+// at the circular clip boundary in some browsers. Two plain circle strokes
+// have no gradient to rasterize and no seam to get wrong.
+const PIE_DIAMETER = 120;
+const PIE_RADIUS = PIE_DIAMETER / 4; // stroke-width below is 2x this, reaching the center
+const PIE_CIRCUMFERENCE = 2 * Math.PI * PIE_RADIUS;
+
+function pieChartSvg(correctPct) {
+  const greenLen = PIE_CIRCUMFERENCE * (correctPct / 100);
+  const redLen = PIE_CIRCUMFERENCE - greenLen;
+  const center = PIE_DIAMETER / 2;
+  // The colored fill (stroke-width 2x radius) reaches exactly to the edge of
+  // this viewBox and no further. The neutral ring is a plain CSS border on
+  // this <svg> element (see .pie-chart in shared/style.css), which -- under
+  // the default content-box sizing -- sits entirely OUTSIDE this box, not
+  // overlapping the fill. An SVG circle drawn at the edge for the border
+  // instead would overlap the colored strokes and reintroduce the same
+  // translucent-border-blends-with-the-fill bleed this replaced.
+  return `
+    <svg class="pie-chart" viewBox="0 0 ${PIE_DIAMETER} ${PIE_DIAMETER}" width="${PIE_DIAMETER}" height="${PIE_DIAMETER}">
+      <circle cx="${center}" cy="${center}" r="${PIE_RADIUS}" fill="none"
+        stroke="var(--accent-green)" stroke-width="${PIE_RADIUS * 2}" />
+      <circle cx="${center}" cy="${center}" r="${PIE_RADIUS}" fill="none"
+        stroke="var(--accent-red)" stroke-width="${PIE_RADIUS * 2}"
+        stroke-dasharray="${redLen.toFixed(3)} ${greenLen.toFixed(3)}"
+        stroke-dashoffset="${(-greenLen).toFixed(3)}"
+        transform="rotate(-90 ${center} ${center})" />
+    </svg>
+  `;
+}
 const RT_PX_PER_SECOND = 200; // bar-length scale: 1000ms of mean RT = 200px
 // Reserved width for each side label (ms value, "1s"), equal on both sides so
 // the track still lands in the middle of the wrap. Part of the wrap's own
@@ -56,7 +89,7 @@ function resultsColumnHtml(condition, stats) {
     <div class="results-column">
       <h2>${conditionLabel}</h2>
       <div class="pie-row">
-        <div class="pie-chart" style="background: conic-gradient(var(--accent-green) 0% ${correctPct}%, var(--accent-red) ${correctPct}% 100%);"></div>
+        ${pieChartSvg(correctPct)}
         <div class="pie-legend">
           <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
           <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
