@@ -86,13 +86,20 @@ html, body {
    would have the animation silently override the positioning the instant it
    plays (the same class of conflict the project already solved once for
    showcase's flicker vs. its pop-in -- different elements, no shared
-   `transform`). */
-.notif-zone-top-left    { position: fixed; top: 24px; left: 24px; z-index: 3; }
-.notif-zone-top-right   { position: fixed; top: 24px; right: 24px; z-index: 3; }
-.notif-zone-mid-left    { position: fixed; top: 50%; left: 24px; transform: translateY(-50%); z-index: 3; }
-.notif-zone-mid-right   { position: fixed; top: 50%; right: 24px; transform: translateY(-50%); z-index: 3; }
-.notif-zone-bottom-left { position: fixed; bottom: 24px; left: 24px; z-index: 3; }
-.notif-zone-bottom-right{ position: fixed; bottom: 24px; right: 24px; z-index: 3; }
+   `transform`).
+
+   Margins are 8vw/8vh, not a flat pixel value -- broadcast title-safe
+   convention sizes margins as a percentage of each dimension (ITU-R
+   BT.1848: 5% per edge; the looser SMPTE/Adobe rule of thumb designers
+   commonly use day to day: 10%), since a fixed pixel margin that looks fine
+   on a laptop preview reads as off-screen-adjacent on an actual TV, where
+   some displays still overscan. 8% sits inside that recommended band. */
+.notif-zone-top-left    { position: fixed; top: 8vh; left: 8vw; z-index: 3; }
+.notif-zone-top-right   { position: fixed; top: 8vh; right: 8vw; z-index: 3; }
+.notif-zone-mid-left    { position: fixed; top: 50%; left: 8vw; transform: translateY(-50%); z-index: 3; }
+.notif-zone-mid-right   { position: fixed; top: 50%; right: 8vw; transform: translateY(-50%); z-index: 3; }
+.notif-zone-bottom-left { position: fixed; bottom: 8vh; left: 8vw; z-index: 3; }
+.notif-zone-bottom-right{ position: fixed; bottom: 8vh; right: 8vw; z-index: 3; }
 
 .notif {
   max-width: min(300px, 20vw);
