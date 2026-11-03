@@ -2,7 +2,7 @@
    Loaded in addition to shared/style.css, never instead of it. */
 
 .notif--bubble {
-  background: #2b2f33;
+  background: #007aff; /* iOS/iMessage sent-bubble blue */
   color: var(--text);
   border-radius: 16px;
   padding: 12px 16px;
