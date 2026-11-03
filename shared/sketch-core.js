@@ -33,7 +33,7 @@ function startStreamTask({
           else soundEngine.playIncorrectChime();
         },
       });
-      if (condition === 'distracted' && startDistractor) startDistractor();
+      if (condition === 'distracted' && startDistractor) startDistractor(soundEngine);
       if (onEngineReady) onEngineReady(engine);
       if (soundEngine) soundEngine.startAmbient();
 

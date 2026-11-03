@@ -50,6 +50,19 @@ class SoundEngine {
     this._tone(180, 0, 0.18, 'sawtooth', 0.12);
   }
 
+  // Two quick high blips -- the generic "new text message" pop, played each
+  // time lean's bubble notification appears.
+  playSmsPopSound() {
+    this._tone(1100, 0, 0.05, 'sine', 0.1);
+    this._tone(1500, 0.05, 0.07, 'sine', 0.1);
+  }
+
+  // Single bell-like tone -- the "ding" played each time showcase's ad-card
+  // notification appears.
+  playAdDing() {
+    this._tone(1046.5, 0, 0.35, 'triangle', 0.1);
+  }
+
   // Soft, low-volume looping tone during gameplay -- deliberately
   // understated so it reads as ambience, not a melody competing with the
   // feedback chimes.

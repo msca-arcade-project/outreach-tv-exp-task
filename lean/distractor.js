@@ -18,7 +18,7 @@ let leanFeedTimer = null;
 let leanLastWrapper = null;
 let leanLastZoneId = null;
 
-function startLeanDistractor() {
+function startLeanDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
   let i = 0;
   const show = () => {
@@ -29,6 +29,7 @@ function startLeanDistractor() {
     bubble.textContent = LEAN_FEED_ITEMS[i % LEAN_FEED_ITEMS.length];
     leanLastWrapper = mountNotif(layer, leanLastZoneId, bubble);
     flashNotif(bubble);
+    if (soundEngine) soundEngine.playSmsPopSound();
     i += 1;
   };
   show();

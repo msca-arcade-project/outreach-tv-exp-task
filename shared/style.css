@@ -139,23 +139,31 @@ html, body {
   gap: 10px;
 }
 .results-column h2 {
-  font-size: 15px;
+  font-size: 19px;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 0;
+}
+/* Pie and legend side by side, per the TV contact's own sketch, rather than
+   stacked with the legend centered underneath. */
+.pie-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
 .pie-chart {
   width: 120px;
   height: 120px;
   border-radius: 50%;
   border: 2px solid var(--panel-border);
+  flex: 0 0 auto;
 }
 .pie-legend {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 14px;
   align-items: flex-start;
 }
 .swatch {

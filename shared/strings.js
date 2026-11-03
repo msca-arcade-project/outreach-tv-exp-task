@@ -11,7 +11,10 @@ const STRINGS = {
     distracted: 'avec distraction',
     undistracted: 'sans distraction',
   },
-  resultsHeading: (label) => `Partie terminée – ${label}`,
+  // Generic page title -- the condition name itself (e.g. "avec distraction")
+  // is shown once, prominently, as each column's own <h2>, per the TV
+  // contact's sketch; repeating it here too was redundant.
+  resultsHeadingGeneric: 'Partie terminée',
   pieCorrectLabel: 'correctes',
   pieErrorLabel: 'erreurs',
   rtHeading: 'TEMPS DE RÉPONSE',

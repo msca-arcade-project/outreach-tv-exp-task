@@ -55,10 +55,12 @@ function resultsColumnHtml(condition, stats) {
   return `
     <div class="results-column">
       <h2>${conditionLabel}</h2>
-      <div class="pie-chart" style="background: conic-gradient(var(--accent-green) 0% ${correctPct}%, var(--accent-red) ${correctPct}% 100%);"></div>
-      <div class="pie-legend">
-        <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
-        <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
+      <div class="pie-row">
+        <div class="pie-chart" style="background: conic-gradient(var(--accent-green) 0% ${correctPct}%, var(--accent-red) ${correctPct}% 100%);"></div>
+        <div class="pie-legend">
+          <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
+          <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
+        </div>
       </div>
       <div class="rt-block">
         <h3 class="rt-heading">${STRINGS.rtHeading}</h3>
@@ -82,11 +84,10 @@ function renderResultsScreen(containerEl, condition, engine) {
   const columns = [resultsColumnHtml(condition, mine)];
   if (other) columns.push(resultsColumnHtml(otherCondition(condition), other));
 
-  const conditionLabel = STRINGS.conditionLabel[condition] ?? condition;
   const otherLabel = STRINGS.conditionLabel[otherCondition(condition)] ?? otherCondition(condition);
 
   containerEl.innerHTML = `
-    <h1>${STRINGS.resultsHeading(conditionLabel)}</h1>
+    <h1>${STRINGS.resultsHeadingGeneric}</h1>
     <div class="results-columns">${columns.join('')}</div>
     <p class="results-hint">${other
       ? STRINGS.resultsHintBoth

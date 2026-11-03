@@ -39,7 +39,7 @@ let showcaseLastZoneId = null;
 
 // Shape follows position, per the TV feedback: oblong at the bottom, square
 // at any of the four non-bottom zones (treated as "beside the stream").
-function startShowcaseDistractor() {
+function startShowcaseDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
   const render = () => {
     if (showcaseLastWrapper) showcaseLastWrapper.remove();
@@ -60,6 +60,7 @@ function startShowcaseDistractor() {
     // and the headline flicker on different diagonals, not in lockstep.
     applyFlicker(cardEl.querySelector('.showcase-emoji'));
     applyFlicker(cardEl.querySelector('.showcase-headline'));
+    if (soundEngine) soundEngine.playAdDing();
     showcaseIndex += 1;
   };
   render();
