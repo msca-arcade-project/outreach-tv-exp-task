@@ -6,7 +6,7 @@
   color: var(--text);
   border-radius: 16px;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 17px; /* 14px x1.2 -- box dimensions (padding/radius) untouched, text only */
   line-height: 1.4;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   transition: background-color 0.4s ease-out;

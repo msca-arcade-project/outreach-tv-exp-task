@@ -21,8 +21,11 @@
 .notif--ad-oblong { width: min(320px, 24vw); height: 90px; }
 .notif--ad-square { width: min(160px, 14vw); height: min(160px, 14vw); }
 
-.showcase-emoji { font-size: 32px; margin-bottom: 4px; }
-.showcase-headline { font-size: 13px; font-weight: bold; }
+/* 1.2x the original 32px/13px -- box dimensions above are untouched, so a
+   square card at the small end of its min() clamp may crop the headline
+   under overflow:hidden on .showcase-card; accepted tradeoff per request. */
+.showcase-emoji { font-size: 38px; margin-bottom: 4px; }
+.showcase-headline { font-size: 16px; font-weight: bold; }
 
 @keyframes showcase-pop {
   0% { transform: scale(0.85); opacity: 0; }

@@ -5,12 +5,14 @@
 // photo/video content after seeing the demo, that needs separate, explicit
 // licensing sign-off before being swapped in here.
 
+// Colours are each blended 20% toward white (newChannel = old*0.8 + 255*0.2)
+// from the original saturated set -- a "20% more pastel" request, concretely.
 const SHOWCASE_CARDS = [
-  { emoji: '\u{1F514}', headline: 'Nouvelle notification', colour: '#ff5e5e' },
-  { emoji: '❤️', headline: '128 personnes ont aimé', colour: '#5b7fe0' },
-  { emoji: '\u{1F525}', headline: 'Tendance du moment', colour: '#ffa500' },
-  { emoji: '\u{1F4AC}', headline: '3 nouveaux messages', colour: '#2ecc71' },
-  { emoji: '✨', headline: 'Rien que pour vous', colour: '#9b59b6' },
+  { emoji: '\u{1F514}', headline: 'Nouvelle notification', colour: '#ff7e7e' },
+  { emoji: '❤️', headline: '128 personnes ont aimé', colour: '#7c99e6' },
+  { emoji: '\u{1F525}', headline: 'Tendance du moment', colour: '#ffb733' },
+  { emoji: '\u{1F4AC}', headline: '3 nouveaux messages', colour: '#58d68d' },
+  { emoji: '✨', headline: 'Rien que pour vous', colour: '#af7ac5' },
 ];
 
 const FLICKER_MAGNITUDE_PX = 6;   // displacement along the random axis, each direction
