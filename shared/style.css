@@ -75,10 +75,27 @@ html, body {
    canvas itself (rather than drawing the fade in p5) needs no per-frame
    logic and no task-engine/sketch-core changes -- items already spawn/get
    removed at the same y thresholds, this only changes how they're painted
-   near the edges. */
+   near the edges.
+
+   Stops are fixed pixel distances, not percentages of canvas height -- the
+   progress panel (#progress-panel: top:24px + ~101px of its own height, so
+   its bottom edge sits at ~125px regardless of viewport size) and key-hints
+   are both fixed-size DOM elements, not something that scales with the
+   canvas. A percentage-based stop cleared them on tall viewports but fell
+   short on shorter ones, leaving a gap where a letter was still fully
+   opaque above the panel's actual bottom edge. 150px of full transparency
+   plus a 50px ramp comfortably clears both regardless of window height. */
 #stream-canvas-holder canvas {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0, transparent 150px, black 200px,
+    black calc(100% - 200px), transparent calc(100% - 150px), transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0, transparent 150px, black 200px,
+    black calc(100% - 200px), transparent calc(100% - 150px), transparent 100%
+  );
 }
 
 /* Notifications float in one of six fixed screen-edge zones rather than a
