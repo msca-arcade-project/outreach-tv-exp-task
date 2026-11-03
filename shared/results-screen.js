@@ -12,8 +12,9 @@ const RT_PX_PER_SECOND = 200; // bar-length scale: 1000ms of mean RT = 200px
 // flex layout (not absolutely positioned) so the wrap's width is its true
 // rendered footprint -- that's what made the previous version overlap the
 // next column: the labels poked out past the box the column-gap was sized
-// against.
-const RT_LABEL_SLOT_PX = 54;
+// against. Sized for the 20px bold ms-value label (TV-legibility pass) --
+// 54px was fine for the old 13px label but would clip "900 ms" at this size.
+const RT_LABEL_SLOT_PX = 70;
 
 function saveRunResult(condition, engine) {
   const stored = JSON.parse(sessionStorage.getItem(RESULTS_KEY) || '{}');
@@ -49,16 +50,18 @@ function resultsColumnHtml(condition, stats) {
     ? '–'
     : `${Math.round(stats.meanRtMs)} ms`;
 
+  const conditionLabel = STRINGS.conditionLabel[condition] ?? condition;
+
   return `
     <div class="results-column">
-      <h2>${condition}</h2>
-      <div class="pie-chart" style="background: conic-gradient(#2ecc71 0% ${correctPct}%, #e74c3c ${correctPct}% 100%);"></div>
+      <h2>${conditionLabel}</h2>
+      <div class="pie-chart" style="background: conic-gradient(var(--accent-green) 0% ${correctPct}%, var(--accent-red) ${correctPct}% 100%);"></div>
       <div class="pie-legend">
-        <span><i class="swatch correct"></i>correct: ${stats.correctCount} / ${stats.totalItems}</span>
-        <span><i class="swatch error"></i>error: ${errorCount} / ${stats.totalItems}</span>
+        <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
+        <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
       </div>
       <div class="rt-block">
-        <h3 class="rt-heading">RESPONSE TIME</h3>
+        <h3 class="rt-heading">${STRINGS.rtHeading}</h3>
         <div class="rt-bar-wrap" style="width: ${RT_LABEL_SLOT_PX * 2 + RT_PX_PER_SECOND}px;">
           <span class="rt-label" style="width: ${RT_LABEL_SLOT_PX}px;">${rtLabel}</span>
           <div class="rt-bar-track" style="width: ${RT_PX_PER_SECOND}px;">
@@ -79,13 +82,16 @@ function renderResultsScreen(containerEl, condition, engine) {
   const columns = [resultsColumnHtml(condition, mine)];
   if (other) columns.push(resultsColumnHtml(otherCondition(condition), other));
 
+  const conditionLabel = STRINGS.conditionLabel[condition] ?? condition;
+  const otherLabel = STRINGS.conditionLabel[otherCondition(condition)] ?? otherCondition(condition);
+
   containerEl.innerHTML = `
-    <h1>Run complete – ${condition}</h1>
+    <h1>${STRINGS.resultsHeading(conditionLabel)}</h1>
     <div class="results-columns">${columns.join('')}</div>
     <p class="results-hint">${other
-      ? 'Both conditions run on this device – comparison above.'
-      : `Run the "${otherCondition(condition)}" condition on this device to see a side-by-side comparison.`}</p>
-    <button id="restart-btn">Run again</button>
+      ? STRINGS.resultsHintBoth
+      : STRINGS.resultsHintSingle(otherLabel)}</p>
+    <button id="restart-btn">${STRINGS.restartButton}</button>
   `;
   containerEl.classList.add('visible');
   document.getElementById('restart-btn').addEventListener('click', () => {

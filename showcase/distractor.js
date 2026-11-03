@@ -6,11 +6,11 @@
 // licensing sign-off before being swapped in here.
 
 const SHOWCASE_CARDS = [
-  { emoji: '\u{1F514}', headline: 'New notification', colour: '#ff5e5e' },
-  { emoji: '❤️', headline: '128 people liked this', colour: '#5b7fe0' },
-  { emoji: '\u{1F525}', headline: 'Trending now', colour: '#ffa500' },
-  { emoji: '\u{1F4AC}', headline: '3 new messages', colour: '#2ecc71' },
-  { emoji: '✨', headline: 'Just for you', colour: '#9b59b6' },
+  { emoji: '\u{1F514}', headline: 'Nouvelle notification', colour: '#ff5e5e' },
+  { emoji: '❤️', headline: '128 personnes ont aimé', colour: '#5b7fe0' },
+  { emoji: '\u{1F525}', headline: 'Tendance du moment', colour: '#ffa500' },
+  { emoji: '\u{1F4AC}', headline: '3 nouveaux messages', colour: '#2ecc71' },
+  { emoji: '✨', headline: 'Rien que pour vous', colour: '#9b59b6' },
 ];
 
 const FLICKER_MAGNITUDE_PX = 6;   // displacement along the random axis, each direction

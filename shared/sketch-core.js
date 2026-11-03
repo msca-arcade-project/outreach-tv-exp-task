@@ -16,6 +16,7 @@ function startStreamTask({
 }) {
   let engine;
   let holder;
+  let bgColor, accentBlue, accentRed;
 
   const sketch = (p) => {
     p.setup = () => {
@@ -25,6 +26,16 @@ function startStreamTask({
       engine = new TaskEngine({ ...engineOptions, canvasHeight: holder.clientHeight });
       if (condition === 'distracted' && startDistractor) startDistractor();
       if (onEngineReady) onEngineReady(engine);
+
+      // Read the canvas fill and the scored-item feedback colors from the
+      // CSS vars, once, rather than hardcoding a second copy here -- this is
+      // the single source of truth both the page chrome and the canvas draw
+      // off of (the previous hardcoded p.background(128) was a separate grey
+      // from the CSS --bg and the two had drifted apart).
+      const rootStyle = getComputedStyle(document.documentElement);
+      bgColor = rootStyle.getPropertyValue('--bg').trim();
+      accentBlue = rootStyle.getPropertyValue('--accent-blue').trim();
+      accentRed = rootStyle.getPropertyValue('--accent-red').trim();
     };
 
     p.windowResized = () => {
@@ -33,7 +44,7 @@ function startStreamTask({
     };
 
     p.draw = () => {
-      p.background(128);
+      p.background(bgColor);
       engine.update(p.deltaTime);
       progressReadout.update(engine);
 
@@ -47,7 +58,18 @@ function startStreamTask({
       p.textSize(48);
       p.noStroke();
       for (const item of engine.items) {
-        if (item.scored) continue; // scored items vanish immediately -- simple and legible
+        if (item.scored) {
+          // Recolor instead of vanishing, so the participant sees the
+          // judgement, not just the item disappearing -- it keeps scrolling
+          // off in this color rather than being removed from the list
+          // (task-engine.js already keeps scored items until they scroll
+          // past the top; this just stops skipping their draw call).
+          // 'incorrect' and 'missed' both read as an error, matching the
+          // results screen's correct/error grouping.
+          p.fill(item.outcome === 'correct' ? accentBlue : accentRed);
+          p.text(item.char, p.width / 2, item.y);
+          continue;
+        }
         const inZone = item.y >= zoneTop && item.y <= zoneBottom;
         const shade = inZone ? 255 : 220;
         p.fill(shade, shade, shade);

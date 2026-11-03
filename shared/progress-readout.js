@@ -8,7 +8,7 @@ class ProgressReadout {
     this.labelEl = labelEl;
     this.valueEl = valueEl;
     this.barFillEl = barFillEl;
-    this.labelEl.textContent = 'CORRECT';
+    this.labelEl.textContent = STRINGS.progressLabel;
   }
 
   update(engine) {

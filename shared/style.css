@@ -1,8 +1,10 @@
 :root {
-  --bg: #808080;
+  --bg: #000000;
   --text: #ffffff;
-  --accent-blue: #5b7fe0;
+  --accent-blue: #4da6ff;
   --accent-orange: #ffa500;
+  --accent-red: #ff5555;
+  --accent-green: #2ecc71;
   --panel-border: rgba(255, 255, 255, 0.4);
   --distractor-height: 160px;
 }
@@ -159,8 +161,9 @@ html, body {
   border-radius: 2px;
   margin-right: 6px;
 }
-.swatch.correct { background: #2ecc71; }
-.swatch.error { background: #e74c3c; }
+.swatch.correct { background: var(--accent-green); }
+.swatch.error { background: var(--accent-red); }
+.stat-num { font-size: 20px; font-weight: bold; }
 .rt-block {
   display: flex;
   flex-direction: column;
@@ -205,7 +208,8 @@ html, body {
   text-align: right;
   padding-right: 10px;
   box-sizing: border-box;
-  font-size: 13px;
+  font-size: 20px;
+  font-weight: bold;
   opacity: 0.9;
   white-space: nowrap;
 }

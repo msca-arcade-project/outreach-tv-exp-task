@@ -1,18 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Lean</title>
-<link rel="stylesheet" href="../shared/style.css?v=5" />
+<link rel="stylesheet" href="../shared/style.css?v=6" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
   <div id="start-screen">
-    <h1>Target: vowel &ndash; press the right arrow.<br />Non-target: consonant &ndash; press the left arrow.</h1>
+    <h1>Cible&nbsp;: voyelle &ndash; appuyez sur la flèche droite.<br />Non-cible&nbsp;: consonne &ndash; appuyez sur la flèche gauche.</h1>
     <div>
-      <button id="start-distracted">Start (with distraction)</button>
-      <button id="start-undistracted">Start (no distraction)</button>
+      <button id="start-distracted">Démarrer (avec distraction)</button>
+      <button id="start-undistracted">Démarrer (sans distraction)</button>
     </div>
   </div>
 
@@ -25,19 +25,20 @@
     <div id="stream-canvas-holder"></div>
     <div id="distractor-panel"></div>
     <div id="key-hints">
-      <span class="non-target">&larr; CONSONANT</span>
-      <span class="target">VOWEL &rarr;</span>
+      <span class="non-target">&larr; CONSONNE</span>
+      <span class="target">VOYELLE &rarr;</span>
     </div>
   </div>
 
   <div id="results-screen"></div>
 
-  <script src="../shared/task-engine.js?v=5"></script>
-  <script src="../shared/progress-readout.js?v=5"></script>
-  <script src="../shared/results-screen.js?v=5"></script>
-  <script src="../shared/sketch-core.js?v=5"></script>
-  <script src="../shared/autoplay.js?v=5"></script>
-  <script src="distractor.js?v=5"></script>
+  <script src="../shared/strings.js?v=6"></script>
+  <script src="../shared/task-engine.js?v=6"></script>
+  <script src="../shared/progress-readout.js?v=6"></script>
+  <script src="../shared/results-screen.js?v=6"></script>
+  <script src="../shared/sketch-core.js?v=6"></script>
+  <script src="../shared/autoplay.js?v=6"></script>
+  <script src="distractor.js?v=6"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page

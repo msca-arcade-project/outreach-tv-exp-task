@@ -3,13 +3,13 @@
 // see todo.md's content constraint.
 
 const LEAN_FEED_ITEMS = [
-  'A day on Venus is longer than its year.',
-  'Honey sealed in a jar does not spoil.',
-  'Octopuses have three hearts.',
-  'The Eiffel Tower grows a little taller in summer heat.',
-  'Bananas are classified as berries; strawberries are not.',
-  'Wombats produce cube-shaped droppings.',
-  'A bolt of lightning is hotter than the surface of the sun.',
+  'Un jour sur Vénus dure plus longtemps qu’une année vénusienne.',
+  'Le miel scellé dans un pot ne se périme jamais.',
+  'Les poulpes ont trois cœurs.',
+  'La tour Eiffel grandit légèrement avec la chaleur de l’été.',
+  'La banane est classée comme une baie ; la fraise non.',
+  'Les wombats produisent des crottes en forme de cube.',
+  'Un éclair est plus chaud que la surface du soleil.',
 ];
 
 let leanFeedTimer = null;
