@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Showcase</title>
-<link rel="stylesheet" href="../shared/style.css?v=7" />
-<link rel="stylesheet" href="style.css?v=7" />
+<link rel="stylesheet" href="../shared/style.css?v=8" />
+<link rel="stylesheet" href="style.css?v=8" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -33,14 +33,15 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=7"></script>
-  <script src="../shared/task-engine.js?v=7"></script>
-  <script src="../shared/progress-readout.js?v=7"></script>
-  <script src="../shared/results-screen.js?v=7"></script>
-  <script src="../shared/sketch-core.js?v=7"></script>
-  <script src="../shared/autoplay.js?v=7"></script>
-  <script src="../shared/notifications.js?v=7"></script>
-  <script src="distractor.js?v=7"></script>
+  <script src="../shared/strings.js?v=8"></script>
+  <script src="../shared/task-engine.js?v=8"></script>
+  <script src="../shared/progress-readout.js?v=8"></script>
+  <script src="../shared/results-screen.js?v=8"></script>
+  <script src="../shared/audio.js?v=8"></script>
+  <script src="../shared/sketch-core.js?v=8"></script>
+  <script src="../shared/autoplay.js?v=8"></script>
+  <script src="../shared/notifications.js?v=8"></script>
+  <script src="distractor.js?v=8"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -59,6 +60,8 @@
     const trialsParam = parseInt(params.get('trials'), 10);
     const trialsOverride = Number.isInteger(trialsParam) && trialsParam > 0 ? trialsParam : null;
 
+    const soundEngine = new SoundEngine();
+
     function begin(condition, { engineOptions = ENGINE_OPTIONS, onEngineReady } = {}) {
       document.getElementById('start-screen').style.display = 'none';
       document.getElementById('task-screen').style.display = 'block';
@@ -73,6 +76,7 @@
         progressReadout,
         engineOptions,
         onEngineReady,
+        soundEngine,
         startDistractor: startShowcaseDistractor,
         stopDistractor: stopShowcaseDistractor,
         onFinish: (engine) => {
@@ -81,12 +85,18 @@
         },
       });
     }
-    document.getElementById('start-distracted').addEventListener('click', () => begin('distracted', {
-      engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
-    }));
-    document.getElementById('start-undistracted').addEventListener('click', () => begin('undistracted', {
-      engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
-    }));
+    document.getElementById('start-distracted').addEventListener('click', () => {
+      soundEngine.unlock();
+      begin('distracted', {
+        engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
+      });
+    });
+    document.getElementById('start-undistracted').addEventListener('click', () => {
+      soundEngine.unlock();
+      begin('undistracted', {
+        engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
+      });
+    });
 
     // Dev-only shortcut: ?debugResults=1 jumps straight to the two-column
     // comparison view with fixed sample numbers, so the results screen can

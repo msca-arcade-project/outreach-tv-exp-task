@@ -13,6 +13,7 @@ function startStreamTask({
   stopDistractor,
   engineOptions = {},
   onEngineReady, // optional: (engine) => void, called once the engine exists -- used by autoplay to attach its auto-responder
+  soundEngine, // optional: shared/audio.js's SoundEngine -- correct/incorrect chimes and gameplay ambience
 }) {
   let engine;
   let holder;
@@ -23,9 +24,18 @@ function startStreamTask({
       holder = document.getElementById(canvasHolderId);
       const canvas = p.createCanvas(holder.clientWidth, holder.clientHeight);
       canvas.parent(canvasHolderId);
-      engine = new TaskEngine({ ...engineOptions, canvasHeight: holder.clientHeight });
+      engine = new TaskEngine({
+        ...engineOptions,
+        canvasHeight: holder.clientHeight,
+        onScored: (item) => {
+          if (!soundEngine) return;
+          if (item.outcome === 'correct') soundEngine.playCorrectChime();
+          else soundEngine.playIncorrectChime();
+        },
+      });
       if (condition === 'distracted' && startDistractor) startDistractor();
       if (onEngineReady) onEngineReady(engine);
+      if (soundEngine) soundEngine.startAmbient();
 
       // Read the canvas fill and the scored-item feedback colors from the
       // CSS vars, once, rather than hardcoding a second copy here -- this is
@@ -78,6 +88,7 @@ function startStreamTask({
 
       if (engine.finished) {
         if (stopDistractor) stopDistractor();
+        if (soundEngine) soundEngine.stopAmbient();
         p.noLoop();
         onFinish(engine);
       }

@@ -31,6 +31,7 @@ class TaskEngine {
     canvasHeight = 600,
     responseZoneCenterFrac = 0.5,
     responseZoneHeightPx = 90,
+    onScored = () => {}, // (item) => void, called exactly once per item once it's scored, whichever path scores it
   } = {}) {
     this.scrollSpeedPxPerSec = scrollSpeedPxPerSec;
     this.itemSpacingPx = itemSpacingPx;
@@ -39,6 +40,7 @@ class TaskEngine {
     this.canvasHeight = canvasHeight;
     this.responseZoneCenterFrac = responseZoneCenterFrac;
     this.responseZoneHeightPx = responseZoneHeightPx;
+    this.onScored = onScored;
     this.itemIntervalMs = (this.itemSpacingPx / this.scrollSpeedPxPerSec) * 1000;
 
     this.items = [];
@@ -99,6 +101,7 @@ class TaskEngine {
           item.scored = true;
           item.outcome = 'missed';
           this.missedCount += 1;
+          this.onScored(item);
         }
       }
     }
@@ -130,5 +133,6 @@ class TaskEngine {
     }
     if (correct) this.correctCount += 1;
     else this.incorrectCount += 1;
+    this.onScored(active);
   }
 }
