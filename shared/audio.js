@@ -7,7 +7,6 @@
 class SoundEngine {
   constructor() {
     this._ctx = null;
-    this._ambientNodes = null;
   }
 
   _ensureContext() {
@@ -61,32 +60,5 @@ class SoundEngine {
   // notification appears.
   playAdDing() {
     this._tone(1046.5, 0, 0.35, 'triangle', 0.1);
-  }
-
-  // Soft, low-volume looping tone during gameplay -- deliberately
-  // understated so it reads as ambience, not a melody competing with the
-  // feedback chimes.
-  startAmbient() {
-    if (this._ambientNodes) return;
-    const ctx = this._ensureContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = 110;
-    gain.gain.value = 0.015;
-    osc.connect(gain).connect(ctx.destination);
-    osc.start();
-    this._ambientNodes = { osc, gain };
-  }
-
-  stopAmbient() {
-    if (!this._ambientNodes) return;
-    const { osc, gain } = this._ambientNodes;
-    const ctx = this._ctx;
-    const t0 = ctx.currentTime;
-    gain.gain.setValueAtTime(gain.gain.value, t0);
-    gain.gain.linearRampToValueAtTime(0, t0 + 0.2);
-    osc.stop(t0 + 0.25);
-    this._ambientNodes = null;
   }
 }
