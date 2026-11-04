@@ -10,6 +10,10 @@ const SHOWCASE_CARDS = [
   { src: 'assets/notifications/messages-maman.png', alt: 'Messages -- Maman' },
   { src: 'assets/notifications/mail.png', alt: 'Mail -- réservation au restaurant' },
   { src: 'assets/notifications/psg-om.png', alt: 'PSG-OM -- but à la 38e minute' },
+  { src: 'assets/notifications/messages-babysitter.png', alt: 'Messages -- Babysitter' },
+  { src: 'assets/notifications/podcasts.png', alt: 'Podcasts -- nouvel épisode du JT' },
+  { src: 'assets/notifications/banque.png', alt: 'Banque -- dernière vérification' },
+  { src: 'assets/notifications/calendrier.png', alt: 'Agenda -- rappel vétérinaire' },
 ];
 
 let showcaseIndex = 0;
