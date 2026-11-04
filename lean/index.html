@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Lean</title>
-<link rel="stylesheet" href="../shared/style.css?v=24" />
-<link rel="stylesheet" href="style.css?v=24" />
+<link rel="stylesheet" href="../shared/style.css?v=25" />
+<link rel="stylesheet" href="style.css?v=25" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -15,6 +15,7 @@
       <button id="start-distracted">Démarrer (avec distraction)</button>
       <button id="start-undistracted">Démarrer (sans distraction)</button>
     </div>
+    <button id="reset-comparison-btn" class="secondary-btn">Réinitialiser la comparaison</button>
   </div>
 
   <div id="task-screen" style="display: none;">
@@ -35,15 +36,15 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=24"></script>
-  <script src="../shared/task-engine.js?v=24"></script>
-  <script src="../shared/progress-readout.js?v=24"></script>
-  <script src="../shared/results-screen.js?v=24"></script>
-  <script src="../shared/audio.js?v=24"></script>
-  <script src="../shared/sketch-core.js?v=24"></script>
-  <script src="../shared/autoplay.js?v=24"></script>
-  <script src="../shared/notifications.js?v=24"></script>
-  <script src="distractor.js?v=24"></script>
+  <script src="../shared/strings.js?v=25"></script>
+  <script src="../shared/task-engine.js?v=25"></script>
+  <script src="../shared/progress-readout.js?v=25"></script>
+  <script src="../shared/results-screen.js?v=25"></script>
+  <script src="../shared/audio.js?v=25"></script>
+  <script src="../shared/sketch-core.js?v=25"></script>
+  <script src="../shared/autoplay.js?v=25"></script>
+  <script src="../shared/notifications.js?v=25"></script>
+  <script src="distractor.js?v=25"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -101,6 +102,16 @@
       begin('undistracted', {
         engineOptions: trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS,
       });
+    });
+
+    // sessionStorage (where results-screen.js keeps a finished run for the
+    // side-by-side comparison) survives a page reload, so a stale run could
+    // otherwise linger and pair up with a fresh one with no way to clear it.
+    document.getElementById('reset-comparison-btn').addEventListener('click', (e) => {
+      clearStoredResults();
+      const original = e.target.textContent;
+      e.target.textContent = 'Comparaison réinitialisée';
+      setTimeout(() => { e.target.textContent = original; }, 1500);
     });
 
     // Dev-only shortcut: ?debugResults=1 jumps straight to the two-column

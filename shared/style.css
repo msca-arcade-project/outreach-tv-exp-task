@@ -57,6 +57,19 @@ html, body {
 }
 #start-screen h1 { font-size: 22px; font-weight: normal; line-height: 1.5; }
 #start-screen button { font-size: 18px; padding: 12px 28px; margin: 0 8px; cursor: pointer; }
+/* Deliberately understated -- a utility action, not a third thing to choose
+   alongside the two real start buttons. */
+.secondary-btn {
+  background: none;
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  opacity: 0.7;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.secondary-btn:hover { opacity: 1; }
 
 /* Centers .bg-panel; #distractor-layer is also a child of this (see
    lean/index.html, showcase/index.html) but its notifications are all

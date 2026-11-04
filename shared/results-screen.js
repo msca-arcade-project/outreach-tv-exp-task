@@ -88,6 +88,15 @@ function otherCondition(condition) {
   return condition === 'distracted' ? 'undistracted' : 'distracted';
 }
 
+// sessionStorage survives a page reload by design (it's only cleared when
+// the tab/window closes) -- so a stale run from before a reload would
+// otherwise keep pairing up with a fresh one as a "comparison" with no way
+// to clear it. Wired to a button on the start screen in both index.html
+// files.
+function clearStoredResults() {
+  sessionStorage.removeItem(RESULTS_KEY);
+}
+
 function resultsColumnHtml(condition, stats) {
   const correctPct = stats.totalItems > 0
     ? (stats.correctCount / stats.totalItems) * 100
