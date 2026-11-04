@@ -138,7 +138,7 @@ function renderResultsScreen(containerEl, condition, engine) {
   if (other) columns.push(resultsColumnHtml(otherCondition(condition), other));
 
   containerEl.innerHTML = `
-    <div class="results-scale-wrap">
+    <div class="results-scale-wrap bg-panel">
       <h1>${STRINGS.resultsHeadingGeneric}</h1>
       <div class="results-columns">${columns.join('')}</div>
       <button id="restart-btn">${STRINGS.restartButton}</button>

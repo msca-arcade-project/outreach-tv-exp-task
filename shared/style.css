@@ -6,6 +6,12 @@
   --accent-red: #ff5555;
   --accent-green: #2ecc71;
   --panel-border: rgba(255, 255, 255, 0.4);
+  /* Branded backdrop supplied by the TV show's team -- swap to blue.png by
+     changing this one line. Shows full-bleed behind the task/results
+     screens; --panel-alpha below is the contrast fix TAT predicted this
+     busy, glossy texture would need behind readable content. */
+  --bg-image: url('assets/backgrounds/coral.png');
+  --panel-alpha: 0.3;
 }
 
 html, body {
@@ -13,9 +19,28 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+/* The rounded, partially-overlapping dark panel between the branded
+   background and the actual task/results content (per the TV contact's
+   spec: ratio 0.7 of the viewport, alpha 0.3 by default). position:relative
+   so #stream-canvas-holder's position:absolute children -- see below --
+   resolve against this box instead of the viewport, and overflow:hidden so
+   the canvas's square corners get clipped to this panel's rounded ones. */
+.bg-panel {
+  position: relative;
+  width: 70vw;
+  height: 70vh;
+  border-radius: 32px;
+  background: rgba(0, 0, 0, var(--panel-alpha));
   overflow: hidden;
 }
 
@@ -33,10 +58,25 @@ html, body {
 #start-screen h1 { font-size: 22px; font-weight: normal; line-height: 1.5; }
 #start-screen button { font-size: 18px; padding: 12px 28px; margin: 0 8px; cursor: pointer; }
 
-#task-screen { position: fixed; inset: 0; }
+/* Centers .bg-panel; #distractor-layer is also a child of this (see
+   lean/index.html, showcase/index.html) but its notifications are all
+   position:fixed and ignore flex layout entirely, so adding display:flex
+   here doesn't affect them -- they stay anchored to the viewport, floating
+   over the branded margin outside .bg-panel, not inside it. */
+#task-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 #progress-panel {
-  position: fixed;
+  /* Was position:fixed (viewport-relative). Now that task content lives
+     inside .bg-panel, this needs to be absolute so it resolves against the
+     panel's own box instead of floating independently at a viewport
+     coordinate that may no longer align with the (now smaller) panel. */
+  position: absolute;
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
@@ -128,6 +168,9 @@ html, body {
 .notif-zone-mid-right   { position: fixed; top: 50%; right: 8vw; transform: translateY(-50%); z-index: 3; }
 .notif-zone-bottom-left { position: fixed; bottom: 8vh; left: 8vw; z-index: 3; }
 .notif-zone-bottom-right{ position: fixed; bottom: 8vh; right: 8vw; z-index: 3; }
+/* Added to the zone wrapper by startNotifCycle() (shared/notifications.js)
+   500ms before removal, so a notification fades out instead of vanishing. */
+.notif-hiding { opacity: 0; transition: opacity 500ms ease-out; }
 
 .notif {
   max-width: min(300px, 20vw);
@@ -135,7 +178,7 @@ html, body {
 }
 
 #key-hints {
-  position: fixed;
+  position: absolute; /* was fixed -- same reasoning as #progress-panel above */
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
@@ -151,21 +194,29 @@ html, body {
 #results-screen {
   position: fixed;
   inset: 0;
-  background: var(--bg);
+  /* No background here (was the flat --bg color) -- that would hide the
+     branded html/body texture behind it entirely. The .bg-panel class
+     (added to .results-scale-wrap below) is what gives this screen its own
+     contrast backdrop now, same as the task screen. */
   color: var(--text);
   display: none;
   align-items: center;
   justify-content: center;
 }
 #results-screen.visible { display: flex; }
-/* Scaling this inner wrapper, not #results-screen itself, keeps the
-   wrapper's own flex layout (its gap, its children's sizing) untouched by
-   the transform -- #results-screen just centers it in the viewport as
-   before, at whatever size it ends up after scaling. */
+/* .bg-panel (shared/style.css, above) gives this its 70vw/70vh rounded dark
+   box; this adds the content's own flex layout and the existing 1.2x
+   scale-up on top of that shared box -- scaling the whole panel, background
+   included, as one unit keeps the content from spilling past its own
+   backdrop. justify-content:center is needed here (not on .bg-panel
+   generically) because this box now has a fixed height its flex content
+   should center within, not just the horizontal centering align-items
+   alone gave it before. */
 .results-scale-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 16px;
   transform: scale(1.2);
 }

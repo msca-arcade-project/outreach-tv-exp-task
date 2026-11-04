@@ -54,3 +54,47 @@ function flashNotif(el) {
     });
   });
 }
+
+// Pacing for a longer (~60s) run: TAT's note asked for a held display
+// (~4s) then a fade (500ms), and a sparser rate overall than the previous
+// fixed 2.5-4s swap -- NOTIF_GAP_MS is this project's own proposed value
+// (not specified), giving an ~8s full cycle.
+const NOTIF_DISPLAY_MS = 4000;
+const NOTIF_FADE_MS = 500;
+const NOTIF_GAP_MS = 3500;
+
+// Drives the display -> fade -> gap -> next cycle shared by both
+// alternatives. `mountNext` creates and mounts the next notification (zone
+// picking, element building, any arrival sound) and returns its zone
+// wrapper -- the only per-alternative-specific piece; this function owns
+// all the timing/state-machine logic so neither distractor.js has to
+// reimplement it. Returns a controller whose stop() cancels every pending
+// timer and removes whatever's currently shown, safe to call from any
+// point in the cycle.
+function startNotifCycle(mountNext) {
+  let currentWrapper = null;
+  let timers = [];
+  const schedule = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
+
+  const cycle = () => {
+    currentWrapper = mountNext();
+    schedule(() => {
+      currentWrapper.classList.add('notif-hiding');
+      schedule(() => {
+        currentWrapper.remove();
+        currentWrapper = null;
+        schedule(cycle, NOTIF_GAP_MS);
+      }, NOTIF_FADE_MS);
+    }, NOTIF_DISPLAY_MS);
+  };
+  cycle();
+
+  return {
+    stop() {
+      timers.forEach(clearTimeout);
+      timers = [];
+      if (currentWrapper) currentWrapper.remove();
+      currentWrapper = null;
+    },
+  };
+}

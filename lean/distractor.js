@@ -14,32 +14,28 @@ const LEAN_FEED_ITEMS = [
   'Un éclair est plus chaud que la surface du soleil.',
 ];
 
-let leanFeedTimer = null;
-let leanLastWrapper = null;
-let leanLastZoneId = null;
+let leanIndex = 0;
+let leanCycle = null;
 
 function startLeanDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
-  let i = 0;
-  const show = () => {
-    if (leanLastWrapper) leanLastWrapper.remove();
-    leanLastZoneId = pickNotifZone(leanLastZoneId);
+  const mountNext = () => {
+    const zoneId = pickNotifZone(leanCycle.lastZoneId);
+    leanCycle.lastZoneId = zoneId;
     const bubble = document.createElement('div');
     bubble.className = 'notif notif--bubble';
-    bubble.textContent = LEAN_FEED_ITEMS[i % LEAN_FEED_ITEMS.length];
-    leanLastWrapper = mountNotif(layer, leanLastZoneId, bubble);
+    bubble.textContent = LEAN_FEED_ITEMS[leanIndex % LEAN_FEED_ITEMS.length];
+    const wrapper = mountNotif(layer, zoneId, bubble);
     flashNotif(bubble);
     if (soundEngine) soundEngine.playSmsPopSound();
-    i += 1;
+    leanIndex += 1;
+    return wrapper;
   };
-  show();
-  leanFeedTimer = setInterval(show, 4000);
+  leanCycle = { lastZoneId: null, controller: null };
+  leanCycle.controller = startNotifCycle(mountNext);
 }
 
 function stopLeanDistractor() {
-  if (leanFeedTimer) clearInterval(leanFeedTimer);
-  leanFeedTimer = null;
-  if (leanLastWrapper) leanLastWrapper.remove();
-  leanLastWrapper = null;
-  leanLastZoneId = null;
+  if (leanCycle) leanCycle.controller.stop();
+  leanCycle = null;
 }

@@ -1,54 +1,34 @@
 /* showcase/style.css -- styling specific to Alternative B's distractor card.
    Loaded in addition to shared/style.css, never instead of it. */
 
+/* .showcase-card is now an <img> itself (the real notification PNGs), not a
+   div wrapping emoji/headline children -- the pop-in animation and shape
+   sizing below are unchanged, but there's no inner content to style. */
 .showcase-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: block;
   border-radius: 6px;
-  color: white;
-  text-align: center;
   box-sizing: border-box;
-  padding: 8px;
-  overflow: hidden;
   animation: showcase-pop 0.35s ease-out;
 }
 /* Shape follows position -- oblong at the bottom, square beside the stream
    (see distractor.js's isBottomZone check). Sizing lives here, not on
    .showcase-card, so the same card markup just picks up whichever shape
-   class its current zone calls for. */
-.notif--ad-oblong { width: min(320px, 24vw); height: 90px; }
-.notif--ad-square { width: min(160px, 14vw); height: min(160px, 14vw); }
-
-/* 1.2x the original 32px/13px -- box dimensions above are untouched, so a
-   square card at the small end of its min() clamp may crop the headline
-   under overflow:hidden on .showcase-card; accepted tradeoff per request. */
-.showcase-emoji { font-size: 38px; margin-bottom: 4px; }
-.showcase-headline { font-size: 16px; font-weight: bold; }
+   class its current zone calls for. The source images are wide banners
+   (~3:1) -- the oblong slot's aspect ratio is close enough to show the
+   whole image (object-fit: contain); the square slot necessarily crops to
+   the image's central portion (object-fit: cover) rather than squashing it. */
+.notif--ad-oblong {
+  width: min(320px, 24vw);
+  height: 90px;
+  object-fit: contain;
+}
+.notif--ad-square {
+  width: min(160px, 14vw);
+  height: min(160px, 14vw);
+  object-fit: cover;
+}
 
 @keyframes showcase-pop {
   0% { transform: scale(0.85); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
-}
-
-/* Flicker: each movable item (emoji, headline) gets its own random-angle
-   axis, set as --flicker-x/--flicker-y by distractor.js, and snaps between
-   the +displacement and -displacement positions with no interpolation --
-   steps(1, end) is what makes this read as a flicker rather than a drift.
-   Lives on the item itself, not the card, so it never fights the card's own
-   pop-in animation above (different elements, no shared `transform`). */
-.flicker {
-  animation-name: flicker-item;
-  animation-duration: var(--flicker-period, 0.15s);
-  animation-timing-function: steps(1, end);
-  animation-iteration-count: infinite;
-}
-@keyframes flicker-item {
-  0%, 49% {
-    transform: translate(var(--flicker-x, 0px), var(--flicker-y, 0px));
-  }
-  50%, 100% {
-    transform: translate(calc(-1 * var(--flicker-x, 0px)), calc(-1 * var(--flicker-y, 0px)));
-  }
 }

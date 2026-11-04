@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Showcase</title>
-<link rel="stylesheet" href="../shared/style.css?v=19" />
-<link rel="stylesheet" href="style.css?v=19" />
+<link rel="stylesheet" href="../shared/style.css?v=20" />
+<link rel="stylesheet" href="style.css?v=20" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -18,30 +18,32 @@
   </div>
 
   <div id="task-screen" style="display: none;">
-    <div id="progress-panel">
-      <div class="label" id="progress-label">CORRECT</div>
-      <div class="value" id="progress-value">0 / 40</div>
-      <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+    <div class="bg-panel">
+      <div id="progress-panel">
+        <div class="label" id="progress-label">CORRECT</div>
+        <div class="value" id="progress-value">0 / 50</div>
+        <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+      </div>
+      <div id="stream-canvas-holder"></div>
+      <div id="key-hints">
+        <span class="non-target">&larr; CONSONNE</span>
+        <span class="target">VOYELLE &rarr;</span>
+      </div>
     </div>
-    <div id="stream-canvas-holder"></div>
     <div id="distractor-layer"></div>
-    <div id="key-hints">
-      <span class="non-target">&larr; CONSONNE</span>
-      <span class="target">VOYELLE &rarr;</span>
-    </div>
   </div>
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=19"></script>
-  <script src="../shared/task-engine.js?v=19"></script>
-  <script src="../shared/progress-readout.js?v=19"></script>
-  <script src="../shared/results-screen.js?v=19"></script>
-  <script src="../shared/audio.js?v=19"></script>
-  <script src="../shared/sketch-core.js?v=19"></script>
-  <script src="../shared/autoplay.js?v=19"></script>
-  <script src="../shared/notifications.js?v=19"></script>
-  <script src="distractor.js?v=19"></script>
+  <script src="../shared/strings.js?v=20"></script>
+  <script src="../shared/task-engine.js?v=20"></script>
+  <script src="../shared/progress-readout.js?v=20"></script>
+  <script src="../shared/results-screen.js?v=20"></script>
+  <script src="../shared/audio.js?v=20"></script>
+  <script src="../shared/sketch-core.js?v=20"></script>
+  <script src="../shared/autoplay.js?v=20"></script>
+  <script src="../shared/notifications.js?v=20"></script>
+  <script src="distractor.js?v=20"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -49,7 +51,7 @@
     const ENGINE_OPTIONS = {
       scrollSpeedPxPerSec: 120, // vertical scroll speed of the stream
       itemSpacingPx: 140,       // vertical gap between consecutive items
-      totalItems: 40,
+      totalItems: 50,           // ~60s run at this scroll rate (TV feedback asked for ~1min)
       targetProbability: 0.3,
     };
 

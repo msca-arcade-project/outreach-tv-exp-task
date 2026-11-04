@@ -1,4 +1,14 @@
 # Feedback
+## 2026-11-04 from TV contact
+- graphics in folder tv-graphics/ use the notification pngs instead of the current ones; I understand that they can supply more pngs and we need to estimate how many we need to fill 1min task duration
+- Is it possible to make the game last longer, like 1 min ? 
+  - TAT: here we estimate number of trials necessary for 60s, at current scroll rate
+  - TAT: I predict that we need to have more sparse distraction rate at 1min duration, and also have a display duration (try 4 sec to start) after which the distraction quickly fades over 500ms
+- Also, can we use this coral pink provided by the show's team as the background color? And if it doesn't work well with the numbers, can we use the blue they sent?
+  - TAT: we try with CYR_BKG_ROSE CORAIL-CREVES, but I predict that we need a darkened alpha layer between bkgnd and the task graphics to get necessary contrast
+
+
+
 ## 2026-11-03 From TV contact
 - Make the numbers easier to see (using bold text and a larger font size)?
 - Increase the size of the words "CONSONNE" (consonant) and "VOYELLE" (vowel), and ensure they are in French?
