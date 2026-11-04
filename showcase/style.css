@@ -13,10 +13,10 @@
 /* Shape follows position -- oblong at the bottom, square beside the stream
    (see distractor.js's isBottomZone check). Sizing lives here, not on
    .showcase-card, so the same card markup just picks up whichever shape
-   class its current zone calls for. The source images are wide banners
-   (~3:1) -- the oblong slot's aspect ratio is close enough to show the
-   whole image (object-fit: contain); the square slot necessarily crops to
-   the image's central portion (object-fit: cover) rather than squashing it. */
+   class its current zone calls for. object-fit: contain on both, per
+   request -- the whole PNG always shows (letterboxed within the square
+   slot, since the source images are wide ~3:1 banners), rather than
+   cropping to fill the box. */
 .notif--ad-oblong {
   width: min(320px, 24vw);
   height: 90px;
@@ -25,7 +25,7 @@
 .notif--ad-square {
   width: min(160px, 14vw);
   height: min(160px, 14vw);
-  object-fit: cover;
+  object-fit: contain;
 }
 
 @keyframes showcase-pop {

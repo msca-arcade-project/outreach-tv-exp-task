@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Lean</title>
-<link rel="stylesheet" href="../shared/style.css?v=20" />
-<link rel="stylesheet" href="style.css?v=20" />
+<link rel="stylesheet" href="../shared/style.css?v=21" />
+<link rel="stylesheet" href="style.css?v=21" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -35,15 +35,15 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=20"></script>
-  <script src="../shared/task-engine.js?v=20"></script>
-  <script src="../shared/progress-readout.js?v=20"></script>
-  <script src="../shared/results-screen.js?v=20"></script>
-  <script src="../shared/audio.js?v=20"></script>
-  <script src="../shared/sketch-core.js?v=20"></script>
-  <script src="../shared/autoplay.js?v=20"></script>
-  <script src="../shared/notifications.js?v=20"></script>
-  <script src="distractor.js?v=20"></script>
+  <script src="../shared/strings.js?v=21"></script>
+  <script src="../shared/task-engine.js?v=21"></script>
+  <script src="../shared/progress-readout.js?v=21"></script>
+  <script src="../shared/results-screen.js?v=21"></script>
+  <script src="../shared/audio.js?v=21"></script>
+  <script src="../shared/sketch-core.js?v=21"></script>
+  <script src="../shared/autoplay.js?v=21"></script>
+  <script src="../shared/notifications.js?v=21"></script>
+  <script src="distractor.js?v=21"></script>
   <script>
     // Named here, not left as buried defaults inside task-engine.js, so the
     // scroll rate (and the other stream parameters) can be tuned per page
@@ -66,7 +66,10 @@
 
     function begin(condition, { engineOptions = ENGINE_OPTIONS, onEngineReady } = {}) {
       document.getElementById('start-screen').style.display = 'none';
-      document.getElementById('task-screen').style.display = 'block';
+      // 'flex', not 'block' -- #task-screen's CSS display:flex is what
+      // centers .bg-panel; an inline style of 'block' would override that
+      // stylesheet rule entirely and silently drop the centering.
+      document.getElementById('task-screen').style.display = 'flex';
       const progressReadout = new ProgressReadout({
         labelEl: document.getElementById('progress-label'),
         valueEl: document.getElementById('progress-value'),
