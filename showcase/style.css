@@ -16,15 +16,23 @@
    class its current zone calls for. object-fit: contain on both, per
    request -- the whole PNG always shows (letterboxed within the square
    slot, since the source images are wide ~3:1 banners), rather than
-   cropping to fill the box. */
+   cropping to fill the box.
+
+   Sizes are the original values x1.5 (legibility request) -- 480/36vw and
+   135px, 240/21vw. max-width: none overrides the shared .notif max-width
+   cap (shared/style.css, there to bound lean's content-sized text bubble),
+   which would otherwise clamp these back down since it's a separate,
+   uncontested property these rules weren't previously setting at all. */
 .notif--ad-oblong {
-  width: min(320px, 24vw);
-  height: 90px;
+  width: min(480px, 36vw);
+  height: 135px;
+  max-width: none;
   object-fit: contain;
 }
 .notif--ad-square {
-  width: min(160px, 14vw);
-  height: min(160px, 14vw);
+  width: min(240px, 21vw);
+  height: min(240px, 21vw);
+  max-width: none;
   object-fit: contain;
 }
 
