@@ -23,10 +23,6 @@ function notifZoneClass(zoneId) {
   return `notif-zone-${zoneId}`;
 }
 
-function isBottomZone(zoneId) {
-  return zoneId === 'bottom-left' || zoneId === 'bottom-right';
-}
-
 // Wraps contentEl in a small fixed-position zone wrapper and appends it to
 // layerEl. The zone class (positioning, including the mid-zones' own
 // transform) lives on this wrapper rather than on contentEl itself -- see

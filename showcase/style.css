@@ -10,28 +10,18 @@
   box-sizing: border-box;
   animation: showcase-pop 0.35s ease-out;
 }
-/* Shape follows position -- oblong at the bottom, square beside the stream
-   (see distractor.js's isBottomZone check). Sizing lives here, not on
-   .showcase-card, so the same card markup just picks up whichever shape
-   class its current zone calls for. object-fit: contain on both, per
-   request -- the whole PNG always shows (letterboxed within the square
-   slot, since the source images are wide ~3:1 banners), rather than
-   cropping to fill the box.
-
-   Sizes are the original values x1.5 (legibility request) -- 480/36vw and
-   135px, 240/21vw. max-width: none overrides the shared .notif max-width
+/* One consistent box in every zone, not shape-by-position -- see
+   distractor.js's comment: a square box was shrinking the ~3:1 source PNGs
+   to ~59% the linear size of the oblong rendering, which read as random
+   per-notification size inconsistency. object-fit: contain shows the whole
+   PNG, not cropped. max-width: none overrides the shared .notif max-width
    cap (shared/style.css, there to bound lean's content-sized text bubble),
-   which would otherwise clamp these back down since it's a separate,
-   uncontested property these rules weren't previously setting at all. */
-.notif--ad-oblong {
+   a separate, previously-uncontested property that would otherwise clamp
+   this back down. Size is the original oblong value x1.5 (legibility
+   request). */
+.notif--ad {
   width: min(480px, 36vw);
   height: 135px;
-  max-width: none;
-  object-fit: contain;
-}
-.notif--ad-square {
-  width: min(240px, 21vw);
-  height: min(240px, 21vw);
   max-width: none;
   object-fit: contain;
 }

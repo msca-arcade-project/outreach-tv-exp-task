@@ -15,23 +15,23 @@ const SHOWCASE_CARDS = [
 let showcaseIndex = 0;
 let showcaseCycle = null;
 
-// Shape follows position, per the TV feedback: oblong at the bottom, square
-// at any of the four non-bottom zones (treated as "beside the stream"). The
-// source images are wide banners (roughly 3:1), so the oblong slot shows
-// the whole image (object-fit: contain, see showcase/style.css) and the
-// square slot crops to its central portion (object-fit: cover) rather than
-// squashing the banner to fit -- a reasonable default, not guaranteed to
-// frame every image equally well.
+// Originally shape-followed-position (oblong at the bottom, square at the
+// sides), per the TV feedback's own spec -- dropped for showcase once real
+// fixed-aspect-ratio (~3:1) PNGs replaced the procedural emoji/color cards:
+// a true square box can only grow until the wide banner's height hits the
+// box edge, rendering it at ~59% the linear size of the oblong rendering.
+// That read as "random, size inconsistent between notifications" since zone
+// placement is independent of which image is showing. One consistent box
+// size in every zone fixes it outright.
 function startShowcaseDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
   const mountNext = () => {
     const zoneId = pickNotifZone(showcaseCycle.lastZoneId);
     showcaseCycle.lastZoneId = zoneId;
-    const shapeClass = isBottomZone(zoneId) ? 'notif--ad-oblong' : 'notif--ad-square';
     const card = SHOWCASE_CARDS[showcaseIndex % SHOWCASE_CARDS.length];
 
     const imgEl = document.createElement('img');
-    imgEl.className = `notif showcase-card ${shapeClass}`;
+    imgEl.className = 'notif showcase-card notif--ad';
     imgEl.src = card.src;
     imgEl.alt = card.alt;
 
