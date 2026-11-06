@@ -14,21 +14,20 @@ const LEAN_FEED_ITEMS = [
   'Un éclair est plus chaud que la surface du soleil.',
 ];
 
-let leanIndex = 0;
 let leanCycle = null;
 
 function startLeanDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
+  const nextItem = createShuffledPicker(LEAN_FEED_ITEMS);
   const mountNext = () => {
     const zoneId = pickNotifZone(leanCycle.lastZoneId);
     leanCycle.lastZoneId = zoneId;
     const bubble = document.createElement('div');
     bubble.className = 'notif notif--bubble';
-    bubble.textContent = LEAN_FEED_ITEMS[leanIndex % LEAN_FEED_ITEMS.length];
+    bubble.textContent = nextItem();
     const wrapper = mountNotif(layer, zoneId, bubble);
     flashNotif(bubble);
     if (soundEngine) soundEngine.playSmsPopSound();
-    leanIndex += 1;
     return wrapper;
   };
   leanCycle = { lastZoneId: null, controller: null };

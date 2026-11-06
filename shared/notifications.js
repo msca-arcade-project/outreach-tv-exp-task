@@ -51,6 +51,34 @@ function flashNotif(el) {
   });
 }
 
+// Steps through `items` in a random order, reshuffling once exhausted, and
+// never repeats the same item back-to-back across that reshuffle boundary --
+// the content-sequence analogue of pickNotifZone's "no immediate repeat"
+// guarantee for screen position. Replaces a plain `index % items.length`
+// round-robin, which always showed the same fixed sequence run after run.
+function createShuffledPicker(items) {
+  let order = [];
+  let pos = 0;
+  function reshuffle(avoidFirst) {
+    order = items.slice();
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    if (avoidFirst !== undefined && order.length > 1 && order[0] === avoidFirst) {
+      [order[0], order[1]] = [order[1], order[0]];
+    }
+    pos = 0;
+  }
+  reshuffle();
+  return function next() {
+    if (pos >= order.length) reshuffle(order[order.length - 1]);
+    const item = order[pos];
+    pos += 1;
+    return item;
+  };
+}
+
 // Pacing for a longer (~60s) run: TAT's note asked for a held display
 // (~4s) then a fade (500ms), and a sparser rate overall than the previous
 // fixed 2.5-4s swap -- NOTIF_GAP_MS is this project's own proposed value

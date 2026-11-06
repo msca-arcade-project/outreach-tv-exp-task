@@ -14,9 +14,11 @@ const SHOWCASE_CARDS = [
   { src: 'assets/notifications/podcasts.png', alt: 'Podcasts -- nouvel épisode du JT' },
   { src: 'assets/notifications/banque.png', alt: 'Banque -- dernière vérification' },
   { src: 'assets/notifications/calendrier.png', alt: 'Agenda -- rappel vétérinaire' },
+  { src: 'assets/notifications/remboursement.png', alt: 'Remboursement -- Laura vous a envoyé 16 €' },
+  { src: 'assets/notifications/ecran-temps.png', alt: 'Temps d\'écran -- rapport hebdomadaire disponible' },
+  { src: 'assets/notifications/tiktok.png', alt: 'TikTok -- 3 nouvelles vidéos pourraient vous intéresser' },
 ];
 
-let showcaseIndex = 0;
 let showcaseCycle = null;
 
 // Originally shape-followed-position (oblong at the bottom, square at the
@@ -29,10 +31,11 @@ let showcaseCycle = null;
 // size in every zone fixes it outright.
 function startShowcaseDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
+  const nextCard = createShuffledPicker(SHOWCASE_CARDS);
   const mountNext = () => {
     const zoneId = pickNotifZone(showcaseCycle.lastZoneId);
     showcaseCycle.lastZoneId = zoneId;
-    const card = SHOWCASE_CARDS[showcaseIndex % SHOWCASE_CARDS.length];
+    const card = nextCard();
 
     const imgEl = document.createElement('img');
     imgEl.className = 'notif showcase-card notif--ad';
@@ -40,7 +43,6 @@ function startShowcaseDistractor(soundEngine) {
     imgEl.alt = card.alt;
 
     if (soundEngine) soundEngine.playAdDing();
-    showcaseIndex += 1;
     return mountNotif(layer, zoneId, imgEl);
   };
   showcaseCycle = { lastZoneId: null, controller: null };
