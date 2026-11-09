@@ -1,4 +1,12 @@
 # Feedback
+## 2026-11-6
+Can we create a single version (not one with distractions and another without), where the first 30 seconds are distraction-free, then notifications start coming in at the 30-second mark, and from 40 seconds onward, they gradually increase in frequency until the end? The longer it goes on, the more distractions there are. 
+Also, can we use the same link everytime ? 
+
+- TAT: we can slice time for a session into percentages so it scales even for shorter or longer than one minute. Hence, no distractions for first 50% of trials, then scale linearly so reach 100% distraction frequency from time=50% to 100%; we can have maxrate of distractions to scale to, and maxrate should occur from time=90% to 100%.
+- TAT: for the end screen we can now show a plot with time on x axis and errors on y axis, and count errors in each 10% time slot - or maybe every 10 second up to a minute; we can show two versions of plot, controlled with a url parameter: plot=barchart and plot=point, where 'point' means showing a clear filled circle at the count location. Start with barchart
+- TAT: let's make a new version of the task with its own link address for this version, parameter ?trials=50 is still provided; use name 'progressive' for this version so we get 'https://../progressive/index.html?trials=50,plot=barchart'
+
 ## 2026-11-04 from TV contact
 - graphics in folder tv-graphics/ use the notification pngs instead of the current ones; I understand that they can supply more pngs and we need to estimate how many we need to fill 1min task duration
 - Is it possible to make the game last longer, like 1 min ? 

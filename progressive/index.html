@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARCADE outreach task &ndash; Progressive</title>
+<link rel="stylesheet" href="../shared/style.css?v=27" />
+<link rel="stylesheet" href="../showcase/style.css?v=27" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+  <div id="start-screen">
+    <h1>Cible&nbsp;: voyelle &ndash; appuyez sur la flèche droite.<br />Non-cible&nbsp;: consonne &ndash; appuyez sur la flèche gauche.<br />Aucune distraction au début&nbsp;; des notifications apparaîtront progressivement.</h1>
+    <div>
+      <button id="start-btn">Démarrer</button>
+    </div>
+  </div>
+
+  <div id="task-screen" style="display: none;">
+    <div class="bg-panel">
+      <div id="progress-panel">
+        <div class="label" id="progress-label">CORRECT</div>
+        <div class="value" id="progress-value">0 / 50</div>
+        <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+      </div>
+      <div id="stream-canvas-holder"></div>
+      <div id="key-hints">
+        <span class="non-target">&larr; CONSONNE</span>
+        <span class="target">VOYELLE &rarr;</span>
+      </div>
+    </div>
+    <div id="distractor-layer"></div>
+  </div>
+
+  <div id="results-screen"></div>
+
+  <script src="../shared/strings.js?v=27"></script>
+  <script src="../shared/task-engine.js?v=27"></script>
+  <script src="../shared/progress-readout.js?v=27"></script>
+  <script src="../shared/results-screen.js?v=27"></script>
+  <script src="../shared/audio.js?v=27"></script>
+  <script src="../shared/sketch-core.js?v=27"></script>
+  <script src="../shared/autoplay.js?v=27"></script>
+  <script src="../shared/notifications.js?v=27"></script>
+  <script src="distractor.js?v=27"></script>
+  <script>
+    // Same rationale as lean/showcase: named here so the stream parameters
+    // can be tuned per page without reading the engine's source.
+    const ENGINE_OPTIONS = {
+      scrollSpeedPxPerSec: 120,
+      itemSpacingPx: 140,
+      totalItems: 50,
+      targetProbability: 0.3,
+    };
+
+    const params = new URLSearchParams(window.location.search);
+
+    // ?trials=N overrides the trial count, same as lean/showcase.
+    const trialsParam = parseInt(params.get('trials'), 10);
+    const trialsOverride = Number.isInteger(trialsParam) && trialsParam > 0 ? trialsParam : null;
+
+    // ?plot=point switches the end-screen error/time chart to filled
+    // circles instead of bars; anything else (including no param) falls
+    // back to the barchart default per the TV contact's own "start with
+    // barchart" note.
+    const plotType = params.get('plot') === 'point' ? 'point' : 'barchart';
+
+    const soundEngine = new SoundEngine();
+
+    // No 'distracted'/'undistracted' choice here -- a progressive run is a
+    // single condition where the distraction *rate* itself ramps up over
+    // the second half (see startProgressiveNotifCycle in notifications.js),
+    // so there's nothing to pick and only one link/button to ever use.
+    function begin(engineOptions = ENGINE_OPTIONS, onEngineReady) {
+      document.getElementById('start-screen').style.display = 'none';
+      document.getElementById('task-screen').style.display = 'flex';
+      const progressReadout = new ProgressReadout({
+        labelEl: document.getElementById('progress-label'),
+        valueEl: document.getElementById('progress-value'),
+        barFillEl: document.getElementById('progress-bar-fill'),
+      });
+      startStreamTask({
+        canvasHolderId: 'stream-canvas-holder',
+        condition: 'distracted', // the ramp (not this flag) gates early-run silence -- see sketch-core.js
+        progressReadout,
+        engineOptions,
+        onEngineReady,
+        soundEngine,
+        startDistractor: startProgressiveDistractor,
+        stopDistractor: stopProgressiveDistractor,
+        onFinish: (engine) => {
+          document.getElementById('task-screen').style.display = 'none';
+          renderProgressiveResultsScreen(document.getElementById('results-screen'), engine, plotType);
+        },
+      });
+    }
+    document.getElementById('start-btn').addEventListener('click', () => {
+      soundEngine.unlock();
+      begin(trialsOverride ? { ...ENGINE_OPTIONS, totalItems: trialsOverride } : ENGINE_OPTIONS);
+    });
+
+    // Dev-only shortcut: ?debugResults=1 jumps straight to the results
+    // screen with fixed sample numbers, so it can be checked without
+    // playing through the task first. No effect unless the param is present.
+    if (params.has('debugResults')) {
+      document.getElementById('start-screen').style.display = 'none';
+      const sampleHistory = [];
+      for (let i = 0; i < 40; i++) {
+        sampleHistory.push({ id: i, outcome: i < 20 ? 'correct' : (i % 3 === 0 ? 'incorrect' : 'correct') });
+      }
+      renderProgressiveResultsScreen(
+        document.getElementById('results-screen'),
+        {
+          correctCount: 33, incorrectCount: 5, missedCount: 2, totalItems: 40, meanRtMs: 420,
+          scoredHistory: sampleHistory,
+        },
+        plotType
+      );
+    }
+
+    // Dev-only shortcut: ?autoplay=1 runs the task hands-free with correct,
+    // human-plausible-delay responses, at a short 20 items -- for recording
+    // a clean, repeatable demo video instead of relying on live keypresses.
+    if (params.get('autoplay') === '1') {
+      begin(
+        { ...ENGINE_OPTIONS, totalItems: trialsOverride ?? 20 },
+        (engine) => startAutoResponder(engine)
+      );
+    }
+  </script>
+</body>
+</html>

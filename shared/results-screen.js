@@ -97,7 +97,11 @@ function clearStoredResults() {
   sessionStorage.removeItem(RESULTS_KEY);
 }
 
-function resultsColumnHtml(condition, stats) {
+// The pie + legend + RT-bar markup, shared by the two-column comparison
+// view (resultsColumnHtml, wraps this in its own <h2> condition heading)
+// and the progressive alternative's single-run view (which has no
+// condition to head it with).
+function pieAndRtBlockHtml(stats) {
   const correctPct = stats.totalItems > 0
     ? (stats.correctCount / stats.totalItems) * 100
     : 0;
@@ -112,30 +116,121 @@ function resultsColumnHtml(condition, stats) {
     ? '–'
     : `${Math.round(stats.meanRtMs)} ms`;
 
-  const conditionLabel = STRINGS.conditionLabel[condition] ?? condition;
-
   return `
-    <div class="results-column">
-      <h2>${conditionLabel}</h2>
-      <div class="pie-row">
-        ${pieChartSvg(correctPct)}
-        <div class="pie-legend">
-          <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
-          <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
-        </div>
+    <div class="pie-row">
+      ${pieChartSvg(correctPct)}
+      <div class="pie-legend">
+        <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
+        <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
       </div>
-      <div class="rt-block">
-        <h3 class="rt-heading">${STRINGS.rtHeading}</h3>
-        <div class="rt-bar-wrap" style="width: ${RT_LABEL_SLOT_PX * 2 + RT_PX_PER_SECOND}px;">
-          <span class="rt-label" style="width: ${RT_LABEL_SLOT_PX}px;">${rtLabel}</span>
-          <div class="rt-bar-track" style="width: ${RT_PX_PER_SECOND}px;">
-            <div class="rt-bar-fill" style="width: ${fillPx}px;"></div>
-          </div>
-          <span class="rt-scale-label" style="width: ${RT_LABEL_SLOT_PX}px;">1s</span>
+    </div>
+    <div class="rt-block">
+      <h3 class="rt-heading">${STRINGS.rtHeading}</h3>
+      <div class="rt-bar-wrap" style="width: ${RT_LABEL_SLOT_PX * 2 + RT_PX_PER_SECOND}px;">
+        <span class="rt-label" style="width: ${RT_LABEL_SLOT_PX}px;">${rtLabel}</span>
+        <div class="rt-bar-track" style="width: ${RT_PX_PER_SECOND}px;">
+          <div class="rt-bar-fill" style="width: ${fillPx}px;"></div>
         </div>
+        <span class="rt-scale-label" style="width: ${RT_LABEL_SLOT_PX}px;">1s</span>
       </div>
     </div>
   `;
+}
+
+function resultsColumnHtml(condition, stats) {
+  const conditionLabel = STRINGS.conditionLabel[condition] ?? condition;
+  return `
+    <div class="results-column">
+      <h2>${conditionLabel}</h2>
+      ${pieAndRtBlockHtml(stats)}
+    </div>
+  `;
+}
+
+// 10 bins keyed to spawn-order fraction (not wall-clock seconds), so the
+// chart generalizes to any ?trials=N the same way the progressive
+// alternative's distraction-rate ramp does (shared/notifications.js's
+// rampedDistractorRate). scoredHistory entries are { id, outcome }, as
+// pushed by TaskEngine; id is the 0-based spawn index.
+const ERROR_TIME_BIN_COUNT = 10;
+const ERROR_CHART_WIDTH = 480;
+const ERROR_CHART_HEIGHT = 160;
+const ERROR_CHART_AXIS_H = 24; // reserved strip at the bottom for bin labels
+
+function binErrorHistory(scoredHistory, totalItems) {
+  const bins = Array.from({ length: ERROR_TIME_BIN_COUNT }, () => ({ errors: 0, items: 0 }));
+  if (totalItems <= 0) return bins;
+  const itemsPerBin = totalItems / ERROR_TIME_BIN_COUNT;
+  for (const entry of scoredHistory) {
+    const binIndex = Math.min(
+      ERROR_TIME_BIN_COUNT - 1,
+      Math.floor(entry.id / totalItems * ERROR_TIME_BIN_COUNT)
+    );
+    bins[binIndex].items += 1;
+    if (entry.outcome !== 'correct') bins[binIndex].errors += 1;
+  }
+  // Theoretical bin size (not the observed count) is the chart's fixed
+  // y-reference -- same "stable frame regardless of the actual numbers"
+  // approach the RT bar above already uses (a fixed 1-second track).
+  bins.forEach((b) => { b.capacity = itemsPerBin; });
+  return bins;
+}
+
+function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
+  const bins = binErrorHistory(scoredHistory, totalItems);
+  const plotH = ERROR_CHART_HEIGHT - ERROR_CHART_AXIS_H;
+  const binW = ERROR_CHART_WIDTH / ERROR_TIME_BIN_COUNT;
+  const maxCapacity = Math.max(1, ...bins.map((b) => b.capacity));
+
+  const marks = bins.map((b, i) => {
+    const h = Math.min(plotH, (b.errors / maxCapacity) * plotH);
+    const cx = i * binW + binW / 2;
+    if (plotType === 'point') {
+      const cy = plotH - h;
+      return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5" fill="var(--accent-red)" />`;
+    }
+    const barW = binW * 0.6;
+    const x = cx - barW / 2;
+    const y = plotH - h;
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" fill="var(--accent-red)" />`;
+  }).join('');
+
+  const labels = bins.map((_, i) => {
+    const cx = i * binW + binW / 2;
+    const pct = i * (100 / ERROR_TIME_BIN_COUNT);
+    return `<text x="${cx.toFixed(1)}" y="${plotH + 16}" class="error-chart-axis-label" text-anchor="middle">${pct}%</text>`;
+  }).join('');
+
+  return `
+    <svg class="error-time-chart" viewBox="0 0 ${ERROR_CHART_WIDTH} ${ERROR_CHART_HEIGHT}" width="${ERROR_CHART_WIDTH}" height="${ERROR_CHART_HEIGHT}">
+      <line x1="0" y1="${plotH}" x2="${ERROR_CHART_WIDTH}" y2="${plotH}" stroke="var(--panel-border)" stroke-width="1" />
+      ${marks}
+      ${labels}
+    </svg>
+  `;
+}
+
+// No sessionStorage/RESULTS_KEY involvement here -- a progressive run is a
+// single condition with nothing to compare against, unlike
+// renderResultsScreen below.
+function renderProgressiveResultsScreen(containerEl, engine, plotType) {
+  const chartSvg = errorTimeChartSvg(engine.scoredHistory ?? [], engine.totalItems, plotType);
+
+  containerEl.innerHTML = `
+    <div class="results-scale-wrap bg-panel">
+      <h1>${STRINGS.resultsHeadingGeneric}</h1>
+      <h3 class="rt-heading">${STRINGS.errorTimeChartHeading}</h3>
+      ${chartSvg}
+      <div class="results-column">
+        ${pieAndRtBlockHtml(engine)}
+      </div>
+      <button id="restart-btn">${STRINGS.restartButton}</button>
+    </div>
+  `;
+  containerEl.classList.add('visible');
+  document.getElementById('restart-btn').addEventListener('click', () => {
+    window.location.reload();
+  });
 }
 
 function renderResultsScreen(containerEl, condition, engine) {

@@ -33,7 +33,11 @@ function startStreamTask({
           else soundEngine.playIncorrectChime();
         },
       });
-      if (condition === 'distracted' && startDistractor) startDistractor(soundEngine);
+      // Second arg (engine) is new -- lean's/showcase's single-arg
+      // startDistractor(soundEngine) functions simply ignore it (JS drops
+      // extra call args), so this is a no-op for them. progressive's own
+      // distractor reads it to drive its progress-based ramp.
+      if (condition === 'distracted' && startDistractor) startDistractor(soundEngine, engine);
       if (onEngineReady) onEngineReady(engine);
 
       // Read the canvas fill and the scored-item feedback colors from the

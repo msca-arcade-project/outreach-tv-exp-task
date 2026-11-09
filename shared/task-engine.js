@@ -52,6 +52,11 @@ class TaskEngine {
     this.incorrectCount = 0;
     this.missedCount = 0;
     this.rts = [];
+    // `this.items` drops an item once it scrolls past the top edge, so by
+    // the time a run finishes the earliest trials are already gone from
+    // that array -- this is the persistent record the progressive
+    // alternative's end-screen error/time chart reads instead.
+    this.scoredHistory = [];
 
     this._spawnNext();
   }
@@ -101,6 +106,7 @@ class TaskEngine {
           item.scored = true;
           item.outcome = 'missed';
           this.missedCount += 1;
+          this.scoredHistory.push({ id: item.id, outcome: item.outcome });
           this.onScored(item);
         }
       }
@@ -133,6 +139,7 @@ class TaskEngine {
     }
     if (correct) this.correctCount += 1;
     else this.incorrectCount += 1;
+    this.scoredHistory.push({ id: active.id, outcome: active.outcome });
     this.onScored(active);
   }
 }

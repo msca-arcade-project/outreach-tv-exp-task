@@ -18,5 +18,6 @@ const STRINGS = {
   pieCorrectLabel: 'correctes',
   pieErrorLabel: 'erreurs',
   rtHeading: 'TEMPS DE RÉPONSE',
+  errorTimeChartHeading: 'ERREURS AU FIL DU TEMPS',
   restartButton: 'Recommencer',
 };

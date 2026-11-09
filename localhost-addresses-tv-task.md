@@ -1,2 +1,3 @@
 - http://localhost:8743/lean/index.html
 - http://localhost:8743/showcase/index.html
+- http://localhost:8743/progressive/index.html

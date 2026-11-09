@@ -1,23 +1,7 @@
 // showcase/distractor.js -- Alternative B: real notification graphics
-// supplied by the TV show's own graphics team (assets/notifications/),
-// commissioned specifically for this use -- a different situation from the
-// no-scraped/no-licensed-media rule in todo.md, which exists to guard
-// against unauthorized exposure, not against assets the broadcaster's own
-// team hands over for this exact purpose.
-
-const SHOWCASE_CARDS = [
-  { src: 'assets/notifications/instagram.png', alt: 'Instagram -- 138 personnes ont aimé' },
-  { src: 'assets/notifications/messages-maman.png', alt: 'Messages -- Maman' },
-  { src: 'assets/notifications/mail.png', alt: 'Mail -- réservation au restaurant' },
-  { src: 'assets/notifications/psg-om.png', alt: 'PSG-OM -- but à la 38e minute' },
-  { src: 'assets/notifications/messages-babysitter.png', alt: 'Messages -- Babysitter' },
-  { src: 'assets/notifications/podcasts.png', alt: 'Podcasts -- nouvel épisode du JT' },
-  { src: 'assets/notifications/banque.png', alt: 'Banque -- dernière vérification' },
-  { src: 'assets/notifications/calendrier.png', alt: 'Agenda -- rappel vétérinaire' },
-  { src: 'assets/notifications/remboursement.png', alt: 'Remboursement -- Laura vous a envoyé 16 €' },
-  { src: 'assets/notifications/ecran-temps.png', alt: 'Temps d\'écran -- rapport hebdomadaire disponible' },
-  { src: 'assets/notifications/tiktok.png', alt: 'TikTok -- 3 nouvelles vidéos pourraient vous intéresser' },
-];
+// supplied by the TV show's own graphics team. The card list itself
+// (NOTIFICATION_CARDS) lives in shared/notifications.js now, since the
+// progressive alternative uses the same set.
 
 let showcaseCycle = null;
 
@@ -31,7 +15,7 @@ let showcaseCycle = null;
 // size in every zone fixes it outright.
 function startShowcaseDistractor(soundEngine) {
   const layer = document.getElementById('distractor-layer');
-  const nextCard = createShuffledPicker(SHOWCASE_CARDS);
+  const nextCard = createShuffledPicker(NOTIFICATION_CARDS);
   const mountNext = () => {
     const zoneId = pickNotifZone(showcaseCycle.lastZoneId);
     showcaseCycle.lastZoneId = zoneId;
