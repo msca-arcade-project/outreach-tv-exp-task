@@ -158,17 +158,17 @@ function resultsColumnHtml(condition, stats) {
 // rampedDistractorRate). scoredHistory entries are { id, outcome }, as
 // pushed by TaskEngine; id is the 0-based spawn index.
 const ERROR_TIME_BIN_COUNT = 10;
-// x5/3 of the original 480x160/24 -- the progressive results screen's own
-// requested scale-up (paired with the pie's x1/3 shrink below, same screen).
-const ERROR_CHART_WIDTH = 800;
-const ERROR_CHART_HEIGHT = 267;
-const ERROR_CHART_AXIS_H = 40; // reserved strip at the bottom for bin labels
-const ERROR_CHART_POINT_RADIUS = 8;
+// Sizing history on this screen: 480x160/24 (original) -> x5/3 -> x0.5 here.
+// Paired with the pie's own x1/3 then x1.1 below, same screen.
+const ERROR_CHART_WIDTH = 400;
+const ERROR_CHART_HEIGHT = 134;
+const ERROR_CHART_AXIS_H = 20; // reserved strip at the bottom for bin labels
+const ERROR_CHART_POINT_RADIUS = 4;
 
-// The progressive results screen's own pie size -- x1/3 of PIE_DIAMETER
-// (the lean/showcase two-column comparison view's size, unaffected), paired
-// with the bar chart's x5/3 scale-up above on that same single-run screen.
-const PROGRESSIVE_PIE_DIAMETER = Math.round(PIE_DIAMETER / 3);
+// The progressive results screen's own pie size -- PIE_DIAMETER (the
+// lean/showcase two-column comparison view's size, unaffected) x1/3, then
+// x1.1, paired with the bar chart's own resizing above on that same screen.
+const PROGRESSIVE_PIE_DIAMETER = Math.round(PIE_DIAMETER / 3 * 1.1);
 
 function binErrorHistory(scoredHistory, totalItems) {
   const bins = Array.from({ length: ERROR_TIME_BIN_COUNT }, () => ({ errors: 0, items: 0 }));
@@ -211,7 +211,7 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
   const labels = bins.map((_, i) => {
     const cx = i * binW + binW / 2;
     const pct = i * (100 / ERROR_TIME_BIN_COUNT);
-    return `<text x="${cx.toFixed(1)}" y="${plotH + 27}" class="error-chart-axis-label" text-anchor="middle">${pct}%</text>`;
+    return `<text x="${cx.toFixed(1)}" y="${plotH + 14}" class="error-chart-axis-label" text-anchor="middle">${pct}%</text>`;
   }).join('');
 
   return `
