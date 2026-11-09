@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Progressive</title>
-<link rel="stylesheet" href="../shared/style.css?v=33" />
-<link rel="stylesheet" href="../showcase/style.css?v=33" />
+<link rel="stylesheet" href="../shared/style.css?v=34" />
+<link rel="stylesheet" href="../showcase/style.css?v=34" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -34,15 +34,15 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=33"></script>
-  <script src="../shared/task-engine.js?v=33"></script>
-  <script src="../shared/progress-readout.js?v=33"></script>
-  <script src="../shared/results-screen.js?v=33"></script>
-  <script src="../shared/audio.js?v=33"></script>
-  <script src="../shared/sketch-core.js?v=33"></script>
-  <script src="../shared/autoplay.js?v=33"></script>
-  <script src="../shared/notifications.js?v=33"></script>
-  <script src="distractor.js?v=33"></script>
+  <script src="../shared/strings.js?v=34"></script>
+  <script src="../shared/task-engine.js?v=34"></script>
+  <script src="../shared/progress-readout.js?v=34"></script>
+  <script src="../shared/results-screen.js?v=34"></script>
+  <script src="../shared/audio.js?v=34"></script>
+  <script src="../shared/sketch-core.js?v=34"></script>
+  <script src="../shared/autoplay.js?v=34"></script>
+  <script src="../shared/notifications.js?v=34"></script>
+  <script src="distractor.js?v=34"></script>
   <script>
     // Same rationale as lean/showcase: named here so the stream parameters
     // can be tuned per page without reading the engine's source.
@@ -65,10 +65,10 @@
     // barchart" note.
     const plotType = params.get('plot') === 'point' ? 'point' : 'barchart';
 
-    // ?piechart=no hides the pie+RT block on the results screen, leaving
-    // just the error/time chart; anything else (including no param)
-    // defaults to showing it, matching the screen's current look.
-    const showPieChart = params.get('piechart') !== 'no';
+    // ?piechart=yes shows the pie row on the results screen (TEMPS DE
+    // RÉPONSE always shows regardless -- see renderProgressiveResultsScreen);
+    // anything else, including no param, defaults to hiding it.
+    const showPieChart = params.get('piechart') === 'yes';
 
     const soundEngine = new SoundEngine();
 

@@ -238,9 +238,9 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
 // No sessionStorage/RESULTS_KEY involvement here -- a progressive run is a
 // single condition with nothing to compare against, unlike
 // renderResultsScreen below. `showPieChart` is wired to progressive/index.html's
-// ?piechart=yes/no param (default yes, i.e. shown) and gates only the pie
+// ?piechart=yes/no param (default no, i.e. hidden) and gates only the pie
 // row -- the RT block always shows regardless of that setting.
-function renderProgressiveResultsScreen(containerEl, engine, plotType, showPieChart = true) {
+function renderProgressiveResultsScreen(containerEl, engine, plotType, showPieChart = false) {
   const chartSvg = errorTimeChartSvg(engine.scoredHistory ?? [], engine.totalItems, plotType);
   const pieRow = showPieChart ? pieRowHtml(engine, PROGRESSIVE_PIE_DIAMETER) : '';
 
