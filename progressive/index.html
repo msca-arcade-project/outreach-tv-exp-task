@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Progressive</title>
-<link rel="stylesheet" href="../shared/style.css?v=35" />
-<link rel="stylesheet" href="../showcase/style.css?v=35" />
+<link rel="stylesheet" href="../shared/style.css?v=36" />
+<link rel="stylesheet" href="../showcase/style.css?v=36" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -34,15 +34,15 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=35"></script>
-  <script src="../shared/task-engine.js?v=35"></script>
-  <script src="../shared/progress-readout.js?v=35"></script>
-  <script src="../shared/results-screen.js?v=35"></script>
-  <script src="../shared/audio.js?v=35"></script>
-  <script src="../shared/sketch-core.js?v=35"></script>
-  <script src="../shared/autoplay.js?v=35"></script>
-  <script src="../shared/notifications.js?v=35"></script>
-  <script src="distractor.js?v=35"></script>
+  <script src="../shared/strings.js?v=36"></script>
+  <script src="../shared/task-engine.js?v=36"></script>
+  <script src="../shared/progress-readout.js?v=36"></script>
+  <script src="../shared/results-screen.js?v=36"></script>
+  <script src="../shared/audio.js?v=36"></script>
+  <script src="../shared/sketch-core.js?v=36"></script>
+  <script src="../shared/autoplay.js?v=36"></script>
+  <script src="../shared/notifications.js?v=36"></script>
+  <script src="distractor.js?v=36"></script>
   <script>
     // Same rationale as lean/showcase: named here so the stream parameters
     // can be tuned per page without reading the engine's source.
@@ -70,6 +70,13 @@
     // anything else, including no param, defaults to hiding it.
     const showPieChart = params.get('piechart') === 'yes';
 
+    // ?maxrate=N overrides the plateau distraction rate (notifications per
+    // second, reached from 90% trial progress onward); anything absent,
+    // non-numeric or <= 0 falls back to startProgressiveNotifCycle's own
+    // default (shared/notifications.js), currently 1.5.
+    const maxRateParam = parseFloat(params.get('maxrate'));
+    const maxRateOverride = Number.isFinite(maxRateParam) && maxRateParam > 0 ? maxRateParam : undefined;
+
     const soundEngine = new SoundEngine();
 
     // No 'distracted'/'undistracted' choice here -- a progressive run is a
@@ -93,6 +100,7 @@
         soundEngine,
         startDistractor: startProgressiveDistractor,
         stopDistractor: stopProgressiveDistractor,
+        distractorOptions: { maxRatePerSec: maxRateOverride },
         onFinish: (engine) => {
           document.getElementById('task-screen').style.display = 'none';
           renderProgressiveResultsScreen(document.getElementById('results-screen'), engine, plotType, showPieChart);

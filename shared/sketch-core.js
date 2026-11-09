@@ -14,6 +14,7 @@ function startStreamTask({
   engineOptions = {},
   onEngineReady, // optional: (engine) => void, called once the engine exists -- used by autoplay to attach its auto-responder
   soundEngine, // optional: shared/audio.js's SoundEngine -- correct/incorrect chimes and notification arrival sounds
+  distractorOptions = {}, // optional: passed through to startDistractor as its 3rd arg -- lean/showcase ignore it, progressive reads { maxRatePerSec } from it (its own ?maxrate= override)
 }) {
   let engine;
   let holder;
@@ -33,11 +34,11 @@ function startStreamTask({
           else soundEngine.playIncorrectChime();
         },
       });
-      // Second arg (engine) is new -- lean's/showcase's single-arg
-      // startDistractor(soundEngine) functions simply ignore it (JS drops
-      // extra call args), so this is a no-op for them. progressive's own
-      // distractor reads it to drive its progress-based ramp.
-      if (condition === 'distracted' && startDistractor) startDistractor(soundEngine, engine);
+      // 2nd (engine) and 3rd (distractorOptions) args are extra for
+      // lean's/showcase's single-arg startDistractor(soundEngine) functions
+      // -- JS drops extra call args, so this is a no-op for them.
+      // progressive's own distractor reads both.
+      if (condition === 'distracted' && startDistractor) startDistractor(soundEngine, engine, distractorOptions);
       if (onEngineReady) onEngineReady(engine);
 
       // Read the canvas fill and the scored-item feedback colors from the

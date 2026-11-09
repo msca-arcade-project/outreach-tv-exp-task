@@ -8,7 +8,11 @@
 
 let progressiveCycle = null;
 
-function startProgressiveDistractor(soundEngine, engine) {
+// `maxRatePerSec`, when provided (progressive/index.html's own ?maxrate=
+// override), is passed straight through to startProgressiveNotifCycle;
+// when undefined, that function's own default (shared/notifications.js)
+// applies.
+function startProgressiveDistractor(soundEngine, engine, { maxRatePerSec } = {}) {
   const layer = document.getElementById('distractor-layer');
   const nextCard = createShuffledPicker(NOTIFICATION_CARDS);
   const mountNext = () => {
@@ -25,7 +29,7 @@ function startProgressiveDistractor(soundEngine, engine) {
     return mountNotif(layer, zoneId, imgEl);
   };
   progressiveCycle = { lastZoneId: null, controller: null };
-  progressiveCycle.controller = startProgressiveNotifCycle(mountNext, engine);
+  progressiveCycle.controller = startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec });
 }
 
 function stopProgressiveDistractor() {
