@@ -239,16 +239,21 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
 // single condition with nothing to compare against, unlike
 // renderResultsScreen below. `showPieChart` is wired to progressive/index.html's
 // ?piechart=yes/no param (default no, i.e. hidden) and gates only the pie
-// row -- the RT block always shows regardless of that setting.
-function renderProgressiveResultsScreen(containerEl, engine, plotType, showPieChart = false) {
-  const chartSvg = errorTimeChartSvg(engine.scoredHistory ?? [], engine.totalItems, plotType);
+// row -- the RT block always shows regardless of either setting.
+// `showChart` (default true) is wired to ?plot=no, which hides the
+// error/time chart and its heading entirely -- TAT's feedback never
+// specified this chart, so keeping it shown by default and only hiding it
+// on request, same spirit as the pie row staying opt-in rather than cut.
+function renderProgressiveResultsScreen(containerEl, engine, plotType, showPieChart = false, showChart = true) {
+  const chartBlock = showChart
+    ? `<h3 class="rt-heading">${STRINGS.errorTimeChartHeading}</h3>${errorTimeChartSvg(engine.scoredHistory ?? [], engine.totalItems, plotType)}`
+    : '';
   const pieRow = showPieChart ? pieRowHtml(engine, PROGRESSIVE_PIE_DIAMETER) : '';
 
   containerEl.innerHTML = `
     <div class="results-scale-wrap bg-panel">
       <h1>${STRINGS.resultsHeadingGeneric}</h1>
-      <h3 class="rt-heading">${STRINGS.errorTimeChartHeading}</h3>
-      ${chartSvg}
+      ${chartBlock}
       <div class="results-column">
         ${pieRow}
         ${rtBlockHtml(engine)}
