@@ -16,18 +16,27 @@ const NOTIF_ZONE_IDS = [
 // assets the broadcaster's own team hands over for this exact purpose.
 // Shared here (not local to showcase/) because both showcase and the
 // progressive alternative use the same set.
+//
+// Each src carries the project's usual ?v=N cache-busting suffix -- unlike
+// every <script>/<link> tag in the index.html files, these paths never had
+// one (they're built in JS, not static markup, so the bump-every-round sed
+// pass never touched them). A browser that ever cached a failed/stale fetch
+// for one of these URLs (a network blip, a deploy-propagation gap) had
+// nothing forcing a refetch, since the URL never changed -- consistent with
+// a report of one specific card showing a broken-image icon while the
+// others, loaded successfully once, kept rendering fine from cache.
 const NOTIFICATION_CARDS = [
-  { src: '../shared/assets/notifications/instagram.png', alt: 'Instagram -- 138 personnes ont aimé' },
-  { src: '../shared/assets/notifications/messages-maman.png', alt: 'Messages -- Maman' },
-  { src: '../shared/assets/notifications/mail.png', alt: 'Mail -- réservation au restaurant' },
-  { src: '../shared/assets/notifications/psg-om.png', alt: 'PSG-OM -- but à la 38e minute' },
-  { src: '../shared/assets/notifications/messages-babysitter.png', alt: 'Messages -- Babysitter' },
-  { src: '../shared/assets/notifications/podcasts.png', alt: 'Podcasts -- nouvel épisode du JT' },
-  { src: '../shared/assets/notifications/banque.png', alt: 'Banque -- dernière vérification' },
-  { src: '../shared/assets/notifications/calendrier.png', alt: 'Agenda -- rappel vétérinaire' },
-  { src: '../shared/assets/notifications/remboursement.png', alt: 'Remboursement -- Laura vous a envoyé 16 €' },
-  { src: '../shared/assets/notifications/ecran-temps.png', alt: 'Temps d\'écran -- rapport hebdomadaire disponible' },
-  { src: '../shared/assets/notifications/tiktok.png', alt: 'TikTok -- 3 nouvelles vidéos pourraient vous intéresser' },
+  { src: '../shared/assets/notifications/instagram.png?v=38', alt: 'Instagram -- 138 personnes ont aimé' },
+  { src: '../shared/assets/notifications/messages-maman.png?v=38', alt: 'Messages -- Maman' },
+  { src: '../shared/assets/notifications/mail.png?v=38', alt: 'Mail -- réservation au restaurant' },
+  { src: '../shared/assets/notifications/psg-om.png?v=38', alt: 'PSG-OM -- but à la 38e minute' },
+  { src: '../shared/assets/notifications/messages-babysitter.png?v=38', alt: 'Messages -- Babysitter' },
+  { src: '../shared/assets/notifications/podcasts.png?v=38', alt: 'Podcasts -- nouvel épisode du JT' },
+  { src: '../shared/assets/notifications/banque.png?v=38', alt: 'Banque -- dernière vérification' },
+  { src: '../shared/assets/notifications/calendrier.png?v=38', alt: 'Agenda -- rappel vétérinaire' },
+  { src: '../shared/assets/notifications/remboursement.png?v=38', alt: 'Remboursement -- Laura vous a envoyé 16 €' },
+  { src: '../shared/assets/notifications/ecran-temps.png?v=38', alt: 'Temps d\'écran -- rapport hebdomadaire disponible' },
+  { src: '../shared/assets/notifications/tiktok.png?v=38', alt: 'TikTok -- 3 nouvelles vidéos pourraient vous intéresser' },
 ];
 
 // Excludes the previous zone so consecutive notifications never land in the
