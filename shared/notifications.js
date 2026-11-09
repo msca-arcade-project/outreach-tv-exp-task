@@ -162,11 +162,11 @@ function rampedDistractorRate(progressFrac, maxRatePerSec) {
 // Poisson process, so "gradually increase in frequency" falls out of
 // rampedDistractorRate() directly instead of a hand-tuned step schedule.
 // `mountNext` has the same contract as startNotifCycle's (builds and mounts
-// the next notification, returns its zone wrapper); display/fade timing
-// reuses the same NOTIF_DISPLAY_MS/NOTIF_FADE_MS constants so a progressive
-// notification looks and feels identical to a lean/showcase one, only the
-// gap between them varies. Returns the same `{ stop() }` shape as
-// startNotifCycle.
+// the next notification, returns its zone wrapper); display timing defaults
+// to the same NOTIF_DISPLAY_MS lean/showcase use (overridable via
+// `displayMs`, see progressive/index.html's ?displayms=), fade always uses
+// NOTIF_FADE_MS -- only the gap between notifications varies here. Returns
+// the same `{ stop() }` shape as startNotifCycle.
 //
 // maxRatePerSec default: each shown notification occupies
 // NOTIF_DISPLAY_MS+NOTIF_FADE_MS (4.5s) of "busy" time where no new one can
@@ -178,7 +178,7 @@ function rampedDistractorRate(progressFrac, maxRatePerSec) {
 // clear rise through the 50-90% window) while saturating throughput to
 // ~6 notifications over that same run -- noticeably more active without
 // needing a faster display/fade cycle.
-function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1.5, pollMs = 250 } = {}) {
+function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1.5, pollMs = 250, displayMs = NOTIF_DISPLAY_MS } = {}) {
   let currentWrapper = null;
   let timers = [];
   let pollTimer = null;
@@ -192,7 +192,7 @@ function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1.5, po
         currentWrapper.remove();
         currentWrapper = null;
       }, NOTIF_FADE_MS);
-    }, NOTIF_DISPLAY_MS);
+    }, displayMs);
   };
 
   pollTimer = setInterval(() => {
