@@ -217,6 +217,21 @@ html, body {
   justify-content: center;
 }
 #results-screen.visible { display: flex; }
+/* Unlike #task-screen's .bg-panel (sized to exactly match the p5 canvas --
+   shared/sketch-core.js reads the holder's clientHeight directly), the
+   results panel just needs to frame whatever's inside it. A fixed 70vh +
+   .bg-panel's own overflow:hidden was silently clipping content on shorter
+   viewports -- centered flex content (.results-scale-wrap below) that's
+   taller than its container clips symmetrically from both ends, not just
+   the bottom, so progressive's extra content (its error/time chart, which
+   sits near the top of the stack, above the pie+RT block) could disappear
+   while the pie stayed visible. Growing to fit instead of clipping keeps
+   every element visible regardless of how much a given results screen has. */
+#results-screen .bg-panel {
+  height: auto;
+  min-height: 70vh;
+  overflow: visible;
+}
 /* .bg-panel (shared/style.css, above) gives this its 70vw/70vh rounded dark
    box; this adds the content's own flex layout and the existing 1.2x
    scale-up on top of that shared box -- scaling the whole panel, background
