@@ -167,7 +167,18 @@ function rampedDistractorRate(progressFrac, maxRatePerSec) {
 // notification looks and feels identical to a lean/showcase one, only the
 // gap between them varies. Returns the same `{ stop() }` shape as
 // startNotifCycle.
-function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1 / 8, pollMs = 250 } = {}) {
+//
+// maxRatePerSec default: each shown notification occupies
+// NOTIF_DISPLAY_MS+NOTIF_FADE_MS (4.5s) of "busy" time where no new one can
+// start, so throughput saturates well below the raw rate for any max much
+// above roughly 1/4.5s -- at the original 1/8 default, a 50-trial/~60s run
+// (distraction active only in the back half) averaged under 2 notifications
+// total, reported as "only a couple" in practice. 1.5/s keeps the ramp's
+// shape (confirmed via simulation: still zero before 50% progress, then a
+// clear rise through the 50-90% window) while saturating throughput to
+// ~6 notifications over that same run -- noticeably more active without
+// needing a faster display/fade cycle.
+function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1.5, pollMs = 250 } = {}) {
   let currentWrapper = null;
   let timers = [];
   let pollTimer = null;
