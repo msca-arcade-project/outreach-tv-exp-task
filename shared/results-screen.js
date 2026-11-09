@@ -31,10 +31,15 @@ function pieEdgePoint(center, radius, pct) {
   };
 }
 
-function pieChartSvg(correctPct) {
-  const center = PIE_DIAMETER / 2;
+// `diameter` defaults to PIE_DIAMETER (the two-column lean/showcase
+// comparison view's size); the progressive alternative's single-run screen
+// passes its own smaller value instead (see renderProgressiveResultsScreen)
+// -- set inline via `style`, not just the SVG width/height attributes,
+// since the .pie-chart CSS class otherwise wins that sizing fight.
+function pieChartSvg(correctPct, diameter = PIE_DIAMETER) {
+  const center = diameter / 2;
   const radius = center;
-  const openTag = `<svg class="pie-chart" viewBox="0 0 ${PIE_DIAMETER} ${PIE_DIAMETER}" width="${PIE_DIAMETER}" height="${PIE_DIAMETER}">`;
+  const openTag = `<svg class="pie-chart" viewBox="0 0 ${diameter} ${diameter}" width="${diameter}" height="${diameter}" style="width: ${diameter}px; height: ${diameter}px;">`;
 
   // A single-arc path can't represent a full 360deg sweep (its start and end
   // point coincide, which most renderers treat as empty) -- the 0%/100%
@@ -101,7 +106,7 @@ function clearStoredResults() {
 // view (resultsColumnHtml, wraps this in its own <h2> condition heading)
 // and the progressive alternative's single-run view (which has no
 // condition to head it with).
-function pieAndRtBlockHtml(stats) {
+function pieAndRtBlockHtml(stats, pieDiameter = PIE_DIAMETER) {
   const correctPct = stats.totalItems > 0
     ? (stats.correctCount / stats.totalItems) * 100
     : 0;
@@ -118,7 +123,7 @@ function pieAndRtBlockHtml(stats) {
 
   return `
     <div class="pie-row">
-      ${pieChartSvg(correctPct)}
+      ${pieChartSvg(correctPct, pieDiameter)}
       <div class="pie-legend">
         <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
         <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
@@ -153,9 +158,17 @@ function resultsColumnHtml(condition, stats) {
 // rampedDistractorRate). scoredHistory entries are { id, outcome }, as
 // pushed by TaskEngine; id is the 0-based spawn index.
 const ERROR_TIME_BIN_COUNT = 10;
-const ERROR_CHART_WIDTH = 480;
-const ERROR_CHART_HEIGHT = 160;
-const ERROR_CHART_AXIS_H = 24; // reserved strip at the bottom for bin labels
+// x5/3 of the original 480x160/24 -- the progressive results screen's own
+// requested scale-up (paired with the pie's x1/3 shrink below, same screen).
+const ERROR_CHART_WIDTH = 800;
+const ERROR_CHART_HEIGHT = 267;
+const ERROR_CHART_AXIS_H = 40; // reserved strip at the bottom for bin labels
+const ERROR_CHART_POINT_RADIUS = 8;
+
+// The progressive results screen's own pie size -- x1/3 of PIE_DIAMETER
+// (the lean/showcase two-column comparison view's size, unaffected), paired
+// with the bar chart's x5/3 scale-up above on that same single-run screen.
+const PROGRESSIVE_PIE_DIAMETER = Math.round(PIE_DIAMETER / 3);
 
 function binErrorHistory(scoredHistory, totalItems) {
   const bins = Array.from({ length: ERROR_TIME_BIN_COUNT }, () => ({ errors: 0, items: 0 }));
@@ -187,7 +200,7 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
     const cx = i * binW + binW / 2;
     if (plotType === 'point') {
       const cy = plotH - h;
-      return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5" fill="var(--accent-red)" />`;
+      return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${ERROR_CHART_POINT_RADIUS}" fill="var(--accent-red)" />`;
     }
     const barW = binW * 0.6;
     const x = cx - barW / 2;
@@ -198,7 +211,7 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
   const labels = bins.map((_, i) => {
     const cx = i * binW + binW / 2;
     const pct = i * (100 / ERROR_TIME_BIN_COUNT);
-    return `<text x="${cx.toFixed(1)}" y="${plotH + 16}" class="error-chart-axis-label" text-anchor="middle">${pct}%</text>`;
+    return `<text x="${cx.toFixed(1)}" y="${plotH + 27}" class="error-chart-axis-label" text-anchor="middle">${pct}%</text>`;
   }).join('');
 
   return `
@@ -222,7 +235,7 @@ function renderProgressiveResultsScreen(containerEl, engine, plotType) {
       <h3 class="rt-heading">${STRINGS.errorTimeChartHeading}</h3>
       ${chartSvg}
       <div class="results-column">
-        ${pieAndRtBlockHtml(engine)}
+        ${pieAndRtBlockHtml(engine, PROGRESSIVE_PIE_DIAMETER)}
       </div>
       <button id="restart-btn">${STRINGS.restartButton}</button>
     </div>
