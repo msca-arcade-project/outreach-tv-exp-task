@@ -225,18 +225,20 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
 
 // No sessionStorage/RESULTS_KEY involvement here -- a progressive run is a
 // single condition with nothing to compare against, unlike
-// renderResultsScreen below.
-function renderProgressiveResultsScreen(containerEl, engine, plotType) {
+// renderResultsScreen below. `showPieChart` is wired to progressive/index.html's
+// ?piechart=yes/no param (default yes, i.e. shown).
+function renderProgressiveResultsScreen(containerEl, engine, plotType, showPieChart = true) {
   const chartSvg = errorTimeChartSvg(engine.scoredHistory ?? [], engine.totalItems, plotType);
+  const pieBlock = showPieChart
+    ? `<div class="results-column">${pieAndRtBlockHtml(engine, PROGRESSIVE_PIE_DIAMETER)}</div>`
+    : '';
 
   containerEl.innerHTML = `
     <div class="results-scale-wrap bg-panel">
       <h1>${STRINGS.resultsHeadingGeneric}</h1>
       <h3 class="rt-heading">${STRINGS.errorTimeChartHeading}</h3>
       ${chartSvg}
-      <div class="results-column">
-        ${pieAndRtBlockHtml(engine, PROGRESSIVE_PIE_DIAMETER)}
-      </div>
+      ${pieBlock}
       <button id="restart-btn">${STRINGS.restartButton}</button>
     </div>
   `;
