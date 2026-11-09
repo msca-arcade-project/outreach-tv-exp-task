@@ -102,15 +102,27 @@ function clearStoredResults() {
   sessionStorage.removeItem(RESULTS_KEY);
 }
 
-// The pie + legend + RT-bar markup, shared by the two-column comparison
-// view (resultsColumnHtml, wraps this in its own <h2> condition heading)
-// and the progressive alternative's single-run view (which has no
-// condition to head it with).
-function pieAndRtBlockHtml(stats, pieDiameter = PIE_DIAMETER) {
+// Pie + legend markup on its own, so a caller can show the RT block without
+// it (see renderProgressiveResultsScreen's showPieChart, which only gates
+// this piece -- RT stays independent of that setting).
+function pieRowHtml(stats, pieDiameter = PIE_DIAMETER) {
   const correctPct = stats.totalItems > 0
     ? (stats.correctCount / stats.totalItems) * 100
     : 0;
   const errorCount = stats.incorrectCount + stats.missedCount;
+
+  return `
+    <div class="pie-row">
+      ${pieChartSvg(correctPct, pieDiameter)}
+      <div class="pie-legend">
+        <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
+        <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
+      </div>
+    </div>
+  `;
+}
+
+function rtBlockHtml(stats) {
   // The track is exactly 1 second wide (RT_PX_PER_SECOND); the fill is
   // clamped to that so the "1s" box stays a true reference frame even if a
   // mean RT somehow exceeded it.
@@ -122,13 +134,6 @@ function pieAndRtBlockHtml(stats, pieDiameter = PIE_DIAMETER) {
     : `${Math.round(stats.meanRtMs)} ms`;
 
   return `
-    <div class="pie-row">
-      ${pieChartSvg(correctPct, pieDiameter)}
-      <div class="pie-legend">
-        <span><i class="swatch correct"></i><strong class="stat-num">${stats.correctCount} / ${stats.totalItems}</strong> ${STRINGS.pieCorrectLabel}</span>
-        <span><i class="swatch error"></i><strong class="stat-num">${errorCount} / ${stats.totalItems}</strong> ${STRINGS.pieErrorLabel}</span>
-      </div>
-    </div>
     <div class="rt-block">
       <h3 class="rt-heading">${STRINGS.rtHeading}</h3>
       <div class="rt-bar-wrap" style="width: ${RT_LABEL_SLOT_PX * 2 + RT_PX_PER_SECOND}px;">
@@ -140,6 +145,13 @@ function pieAndRtBlockHtml(stats, pieDiameter = PIE_DIAMETER) {
       </div>
     </div>
   `;
+}
+
+// The pie-row + RT-block combo, shared by the two-column comparison view
+// (resultsColumnHtml, wraps this in its own <h2> condition heading) --
+// there both always show together, unlike progressive's single-run view.
+function pieAndRtBlockHtml(stats, pieDiameter = PIE_DIAMETER) {
+  return pieRowHtml(stats, pieDiameter) + rtBlockHtml(stats);
 }
 
 function resultsColumnHtml(condition, stats) {
@@ -226,19 +238,21 @@ function errorTimeChartSvg(scoredHistory, totalItems, plotType) {
 // No sessionStorage/RESULTS_KEY involvement here -- a progressive run is a
 // single condition with nothing to compare against, unlike
 // renderResultsScreen below. `showPieChart` is wired to progressive/index.html's
-// ?piechart=yes/no param (default yes, i.e. shown).
+// ?piechart=yes/no param (default yes, i.e. shown) and gates only the pie
+// row -- the RT block always shows regardless of that setting.
 function renderProgressiveResultsScreen(containerEl, engine, plotType, showPieChart = true) {
   const chartSvg = errorTimeChartSvg(engine.scoredHistory ?? [], engine.totalItems, plotType);
-  const pieBlock = showPieChart
-    ? `<div class="results-column">${pieAndRtBlockHtml(engine, PROGRESSIVE_PIE_DIAMETER)}</div>`
-    : '';
+  const pieRow = showPieChart ? pieRowHtml(engine, PROGRESSIVE_PIE_DIAMETER) : '';
 
   containerEl.innerHTML = `
     <div class="results-scale-wrap bg-panel">
       <h1>${STRINGS.resultsHeadingGeneric}</h1>
       <h3 class="rt-heading">${STRINGS.errorTimeChartHeading}</h3>
       ${chartSvg}
-      ${pieBlock}
+      <div class="results-column">
+        ${pieRow}
+        ${rtBlockHtml(engine)}
+      </div>
       <button id="restart-btn">${STRINGS.restartButton}</button>
     </div>
   `;
