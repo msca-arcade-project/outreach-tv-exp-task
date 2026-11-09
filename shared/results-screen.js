@@ -177,10 +177,12 @@ const ERROR_CHART_HEIGHT = 134;
 const ERROR_CHART_AXIS_H = 20; // reserved strip at the bottom for bin labels
 const ERROR_CHART_POINT_RADIUS = 4;
 
-// The progressive results screen's own pie size -- PIE_DIAMETER (the
-// lean/showcase two-column comparison view's size, unaffected) x1/3, then
-// x1.1, paired with the bar chart's own resizing above on that same screen.
-const PROGRESSIVE_PIE_DIAMETER = Math.round(PIE_DIAMETER / 3 * 1.1);
+// The progressive results screen's own pie size. Back to PIE_DIAMETER (the
+// lean/showcase two-column comparison view's original 120px) -- swap to the
+// line below to go back to the smaller sizing (PIE_DIAMETER x1/3, then
+// x1.1, tried alongside the bar chart's own resizing on that same screen).
+const PROGRESSIVE_PIE_DIAMETER = PIE_DIAMETER;
+// const PROGRESSIVE_PIE_DIAMETER = Math.round(PIE_DIAMETER / 3 * 1.1);
 
 function binErrorHistory(scoredHistory, totalItems) {
   const bins = Array.from({ length: ERROR_TIME_BIN_COUNT }, () => ({ errors: 0, items: 0 }));
