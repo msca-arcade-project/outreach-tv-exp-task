@@ -18,10 +18,10 @@
    cap (shared/style.css, there to bound lean's content-sized text bubble),
    a separate, previously-uncontested property that would otherwise clamp
    this back down. Size is the original oblong value x1.5 (legibility
-   request). */
+   request), then x1.1 (2026-11-09 playtest: too easy to ignore). */
 .notif--ad {
-  width: min(480px, 36vw);
-  height: 135px;
+  width: min(528px, 39.6vw);
+  height: 148px;
   max-width: none;
   object-fit: contain;
 }

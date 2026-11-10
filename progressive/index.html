@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ARCADE outreach task &ndash; Progressive</title>
-<link rel="stylesheet" href="../shared/style.css?v=41" />
-<link rel="stylesheet" href="../showcase/style.css?v=41" />
+<link rel="stylesheet" href="../shared/style.css?v=42" />
+<link rel="stylesheet" href="../showcase/style.css?v=42" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 </head>
 <body>
@@ -34,15 +34,15 @@
 
   <div id="results-screen"></div>
 
-  <script src="../shared/strings.js?v=41"></script>
-  <script src="../shared/task-engine.js?v=41"></script>
-  <script src="../shared/progress-readout.js?v=41"></script>
-  <script src="../shared/results-screen.js?v=41"></script>
-  <script src="../shared/audio.js?v=41"></script>
-  <script src="../shared/sketch-core.js?v=41"></script>
-  <script src="../shared/autoplay.js?v=41"></script>
-  <script src="../shared/notifications.js?v=41"></script>
-  <script src="distractor.js?v=41"></script>
+  <script src="../shared/strings.js?v=42"></script>
+  <script src="../shared/task-engine.js?v=42"></script>
+  <script src="../shared/progress-readout.js?v=42"></script>
+  <script src="../shared/results-screen.js?v=42"></script>
+  <script src="../shared/audio.js?v=42"></script>
+  <script src="../shared/sketch-core.js?v=42"></script>
+  <script src="../shared/autoplay.js?v=42"></script>
+  <script src="../shared/notifications.js?v=42"></script>
+  <script src="distractor.js?v=42"></script>
   <script>
     // Same rationale as lean/showcase: named here so the stream parameters
     // can be tuned per page without reading the engine's source.
@@ -87,6 +87,12 @@
     const displayMsParam = parseFloat(params.get('displayms'));
     const displayMsOverride = Number.isFinite(displayMsParam) && displayMsParam > 0 ? displayMsParam : undefined;
 
+    // ?overlap=yes lets more than one notification be visible at once
+    // (capped at the 6 available zones), so the plateau rate can actually
+    // be reached instead of being capped by the single-slot busy time;
+    // anything else, including no param, keeps the one-at-a-time default.
+    const overlapOverride = params.get('overlap') === 'yes';
+
     const soundEngine = new SoundEngine();
 
     // No 'distracted'/'undistracted' choice here -- a progressive run is a
@@ -110,7 +116,7 @@
         soundEngine,
         startDistractor: startProgressiveDistractor,
         stopDistractor: stopProgressiveDistractor,
-        distractorOptions: { maxRatePerSec: maxRateOverride, displayMs: displayMsOverride },
+        distractorOptions: { maxRatePerSec: maxRateOverride, displayMs: displayMsOverride, overlap: overlapOverride },
         onFinish: (engine) => {
           document.getElementById('task-screen').style.display = 'none';
           renderProgressiveResultsScreen(document.getElementById('results-screen'), engine, plotType, showPieChart, showChart);

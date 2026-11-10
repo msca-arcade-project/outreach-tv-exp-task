@@ -1,4 +1,12 @@
 # Feedback
+## 2026-11-09
+Only 15 letters before the notifications start, not 25—otherwise, it takes too long to get going.
+Could we make the notifications slightly larger? I want them to be more distracting; I just had the game playtested, and there weren't many errors.
+Also, they definitely need to stay on screen a bit longer—maybe 4 seconds would be enough. Ask him if he can increase the frequency of the notifications as the game progresses (if that's not possible, no worries).
+
+- TAT: start distractors after 15 trials, then scale linearly
+- TAT: increase distractors size, scale by 1.1
+- TAT: make an url option 'overlap=yes/no' to allow a new distractor to appear before the previous is gone - otherwise I dont see how rate can increase with a 4s display time
 ## 2026-11-6
 Can we create a single version (not one with distractions and another without), where the first 30 seconds are distraction-free, then notifications start coming in at the 30-second mark, and from 40 seconds onward, they gradually increase in frequency until the end? The longer it goes on, the more distractions there are. 
 Also, can we use the same link everytime ? 

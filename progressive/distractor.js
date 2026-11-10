@@ -8,16 +8,20 @@
 
 let progressiveCycle = null;
 
-// `maxRatePerSec` and `displayMs`, when provided (progressive/index.html's
-// own ?maxrate=/?displayms= overrides), pass straight through to
-// startProgressiveNotifCycle; when undefined, that function's own defaults
-// (shared/notifications.js) apply.
-function startProgressiveDistractor(soundEngine, engine, { maxRatePerSec, displayMs } = {}) {
+// `maxRatePerSec`, `displayMs` and `overlap`, when provided
+// (progressive/index.html's own ?maxrate=/?displayms=/?overlap= overrides),
+// pass straight through to startProgressiveNotifCycle; when undefined, that
+// function's own defaults (shared/notifications.js) apply.
+function startProgressiveDistractor(soundEngine, engine, { maxRatePerSec, displayMs, overlap } = {}) {
   const layer = document.getElementById('distractor-layer');
   const nextCard = createShuffledPicker(NOTIFICATION_CARDS);
-  const mountNext = () => {
-    const zoneId = pickNotifZone(progressiveCycle.lastZoneId);
-    progressiveCycle.lastZoneId = zoneId;
+  // `occupiedZoneIds` (the set of zones currently in use) is owned and
+  // passed in by startProgressiveNotifCycle -- that's also what tracks the
+  // zone-repeat guarantee across calls now, so this function has no zone
+  // bookkeeping of its own.
+  const mountNext = (occupiedZoneIds) => {
+    const zoneId = pickNotifZone(occupiedZoneIds);
+    if (!zoneId) return null;
     const card = nextCard();
 
     const imgEl = document.createElement('img');
@@ -28,11 +32,10 @@ function startProgressiveDistractor(soundEngine, engine, { maxRatePerSec, displa
     if (soundEngine) soundEngine.playAdDing();
     return mountNotif(layer, zoneId, imgEl);
   };
-  progressiveCycle = { lastZoneId: null, controller: null };
-  progressiveCycle.controller = startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec, displayMs });
+  progressiveCycle = startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec, displayMs, overlap });
 }
 
 function stopProgressiveDistractor() {
-  if (progressiveCycle) progressiveCycle.controller.stop();
+  if (progressiveCycle) progressiveCycle.stop();
   progressiveCycle = null;
 }
