@@ -26,17 +26,17 @@ const NOTIF_ZONE_IDS = [
 // a report of one specific card showing a broken-image icon while the
 // others, loaded successfully once, kept rendering fine from cache.
 const NOTIFICATION_CARDS = [
-  { src: '../shared/assets/notifications/instagram.png?v=42', alt: 'Instagram -- 138 personnes ont aimé' },
-  { src: '../shared/assets/notifications/messages-maman.png?v=42', alt: 'Messages -- Maman' },
-  { src: '../shared/assets/notifications/mail.png?v=42', alt: 'Mail -- réservation au restaurant' },
-  { src: '../shared/assets/notifications/psg-om.png?v=42', alt: 'PSG-OM -- but à la 38e minute' },
-  { src: '../shared/assets/notifications/messages-babysitter.png?v=42', alt: 'Messages -- Babysitter' },
-  { src: '../shared/assets/notifications/podcasts.png?v=42', alt: 'Podcasts -- nouvel épisode du JT' },
-  { src: '../shared/assets/notifications/banque.png?v=42', alt: 'Banque -- dernière vérification' },
-  { src: '../shared/assets/notifications/calendrier.png?v=42', alt: 'Agenda -- rappel vétérinaire' },
-  { src: '../shared/assets/notifications/remboursement.png?v=42', alt: 'Remboursement -- Laura vous a envoyé 16 €' },
-  { src: '../shared/assets/notifications/ecran-temps.png?v=42', alt: 'Temps d\'écran -- rapport hebdomadaire disponible' },
-  { src: '../shared/assets/notifications/tiktok.png?v=42', alt: 'TikTok -- 3 nouvelles vidéos pourraient vous intéresser' },
+  { src: '../shared/assets/notifications/instagram.png?v=43', alt: 'Instagram -- 138 personnes ont aimé' },
+  { src: '../shared/assets/notifications/messages-maman.png?v=43', alt: 'Messages -- Maman' },
+  { src: '../shared/assets/notifications/mail.png?v=43', alt: 'Mail -- réservation au restaurant' },
+  { src: '../shared/assets/notifications/psg-om.png?v=43', alt: 'PSG-OM -- but à la 38e minute' },
+  { src: '../shared/assets/notifications/messages-babysitter.png?v=43', alt: 'Messages -- Babysitter' },
+  { src: '../shared/assets/notifications/podcasts.png?v=43', alt: 'Podcasts -- nouvel épisode du JT' },
+  { src: '../shared/assets/notifications/banque.png?v=43', alt: 'Banque -- dernière vérification' },
+  { src: '../shared/assets/notifications/calendrier.png?v=43', alt: 'Agenda -- rappel vétérinaire' },
+  { src: '../shared/assets/notifications/remboursement.png?v=43', alt: 'Remboursement -- Laura vous a envoyé 16 €' },
+  { src: '../shared/assets/notifications/ecran-temps.png?v=43', alt: 'Temps d\'écran -- rapport hebdomadaire disponible' },
+  { src: '../shared/assets/notifications/tiktok.png?v=43', alt: 'TikTok -- 3 nouvelles vidéos pourraient vous intéresser' },
 ];
 
 // Excludes the given zone(s) so consecutive (or, under progressive's
