@@ -19,9 +19,26 @@
    a separate, previously-uncontested property that would otherwise clamp
    this back down. Size is the original oblong value x1.5 (legibility
    request), then x1.1 (2026-11-09 playtest: too easy to ignore), then
-   another x1.1 on top of that. */
+   another x1.1 on top of that -- at which point the vw term below was wide
+   enough to start reaching into the scrolling-letter column on typical
+   viewport widths (see the derivation below) and got capped back down
+   rather than scaled again.
+
+   width's vw term is derived, not eyeballed: the zone wrapper (shared/
+   style.css's .notif-zone-* classes) anchors 8vw in from its screen edge
+   and this box grows *inward* from that anchor (a right-side zone's `right:
+   8vw` still lays the <img> out left-to-right from that point, same
+   direction as a left-side zone's `left: 8vw`) -- so its reach toward
+   center is (edge margin) + (this width). Reserving a matching 8vw of
+   clearance on each side of the vertical centerline (where the scrolling
+   letters are drawn, and a round number consistent with the zone margins'
+   own broadcast-safe-margin convention) leaves 50vw - 8vw - 8vw = 34vw of
+   headroom for this box, on any viewport width -- not just the current one,
+   so it stays correct through future viewport sizes without re-deriving.
+   The 581px pixel cap still applies above that on wide viewports, where
+   34vw alone would run larger than needed for legibility. */
 .notif--ad {
-  width: min(581px, 43.6vw);
+  width: min(581px, 34vw);
   height: 163px;
   max-width: none;
   object-fit: contain;
