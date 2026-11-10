@@ -20,19 +20,30 @@
    this back down. Size history: original oblong value x1.5 (legibility
    request), x1.1, x1.1 again (reaching 581x163 -- at which point the vw
    term was capped to 34vw, derived so this box could never reach within
-   8vw of the center letter column on any viewport width), then x0.9
-   (reported still overlapping a letter at a real 1077px test width) down
-   to 528x148, then x1.02 (both numbers) to the current 540x151 --
-   explicitly requested to hit ~540px rendered AT 1077px specifically, even
-   after being told that width needs ~50vw at that viewport (not 34vw) to
-   get there, which removes nearly all clearance before the center letter
-   column at that width and narrower. The 34vw-derived safe version is
-   above in this comment's own history if that trade needs revisiting --
-   this value prioritizes legibility at the one confirmed real test width
-   over the general occlusion guarantee. */
+   8vw of the center letter column on any viewport width), then x0.9 down
+   to 528x148. From there, briefly tried widening the vw term to 50.14vw
+   (540x151) to hit ~540px rendered at a specific 1077px test width, on an
+   explicit request after being warned that trade would leave almost no
+   clearance before the center letter column -- occlusion was reported
+   again, confirming it. Reverted to 528x148 / 34vw: see the derivation
+   below, which this value restores exactly.
+
+   width's vw term is derived, not eyeballed: the zone wrapper (shared/
+   style.css's .notif-zone-* classes) anchors 8vw in from its screen edge
+   and this box grows *inward* from that anchor (a right-side zone's `right:
+   8vw` still lays the <img> out left-to-right from that point, same
+   direction as a left-side zone's `left: 8vw`) -- so its reach toward
+   center is (edge margin) + (this width). Reserving a matching 8vw of
+   clearance on each side of the vertical centerline (where the scrolling
+   letters are drawn, and a round number consistent with the zone margins'
+   own broadcast-safe-margin convention) leaves 50vw - 8vw - 8vw = 34vw of
+   headroom for this box, on any viewport width -- not just the current one,
+   so it stays correct through future viewport sizes without re-deriving.
+   The 528px pixel cap still applies above that on wide viewports, where
+   34vw alone would run larger than needed for legibility. */
 .notif--ad {
-  width: min(540px, 50.14vw);
-  height: 151px;
+  width: min(528px, 34vw);
+  height: 148px;
   max-width: none;
   object-fit: contain;
 }

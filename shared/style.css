@@ -152,16 +152,16 @@ html, body {
 }
 
 /* Notifications float in one of six fixed screen-edge zones rather than a
-   single persistent bar, so they appear in varied locations (TV feedback).
-   The intent is to stay clear of the center decision column and the
-   top-center progress panel -- both of which sit on the horizontal center
-   -- but that only holds as long as the notification content itself is
-   narrow enough not to reach from its zone's edge margin all the way to
-   center; see showcase/style.css's .notif--ad comment and its size
-   history. That value currently prioritizes legibility at one confirmed
-   test viewport width over this guarantee, so don't assume it holds
-   without checking that comment first. #distractor-layer (the mount
-   point) carries no styling of its own.
+   single persistent bar, so they appear in varied locations (TV feedback)
+   without ever reaching into the center decision column or the top-center
+   progress panel -- both of which sit on the horizontal center, so staying
+   out of the left/right margins keeps them clear by construction. This
+   holds only as long as the notification content itself is narrow enough
+   not to reach from its zone's edge margin all the way to center -- see
+   showcase/style.css's .notif--ad comment and its size history for the
+   derivation (a 50.14vw experiment briefly broke this, reported as
+   occlusion, and was reverted). #distractor-layer (the mount point)
+   carries no styling of its own.
 
    Each zone class belongs on a small WRAPPER element, not on the visible
    notification itself -- shared/notifications.js's mountNotif() creates
