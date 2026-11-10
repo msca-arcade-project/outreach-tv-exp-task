@@ -17,12 +17,12 @@
    PNG, not cropped. max-width: none overrides the shared .notif max-width
    cap (shared/style.css, there to bound lean's content-sized text bubble),
    a separate, previously-uncontested property that would otherwise clamp
-   this back down. Size is the original oblong value x1.5 (legibility
-   request), then x1.1 (2026-11-09 playtest: too easy to ignore), then
-   another x1.1 on top of that -- at which point the vw term below was wide
-   enough to start reaching into the scrolling-letter column on typical
-   viewport widths (see the derivation below) and got capped back down
-   rather than scaled again.
+   this back down. Size history: original oblong value x1.5 (legibility
+   request), x1.1, x1.1 again (reaching 581x163 -- at which point the vw
+   term had to be capped down to 34vw, see below, since it was wide enough
+   to reach into the scrolling-letter column on typical viewport widths),
+   then x0.9 (reported still overlapping a letter live) back down to
+   528x148.
 
    width's vw term is derived, not eyeballed: the zone wrapper (shared/
    style.css's .notif-zone-* classes) anchors 8vw in from its screen edge
@@ -35,11 +35,13 @@
    own broadcast-safe-margin convention) leaves 50vw - 8vw - 8vw = 34vw of
    headroom for this box, on any viewport width -- not just the current one,
    so it stays correct through future viewport sizes without re-deriving.
-   The 581px pixel cap still applies above that on wide viewports, where
-   34vw alone would run larger than needed for legibility. */
+   The 528px pixel cap still applies above that on wide viewports, where
+   34vw alone would run larger than needed for legibility; shrinking the
+   pixel cap (581->528) only tightens that margin further, so the 34vw
+   derivation is unaffected and still holds. */
 .notif--ad {
-  width: min(581px, 34vw);
-  height: 163px;
+  width: min(528px, 34vw);
+  height: 148px;
   max-width: none;
   object-fit: contain;
 }
