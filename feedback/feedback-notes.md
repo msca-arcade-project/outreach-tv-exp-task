@@ -1,4 +1,12 @@
 # Feedback
+## 2026-11-10
+One last request, if by any chance you have a bit of time: we would love to use the first version (with no overlapping notifications), but would it be possible to add multiple notifications towards the end of the experiment?
+
+We love the second version, but starting the distractions with several notifications might be a bit too much...
+
+- TAT: we can change the 'overlapping' url parameter to accept a number 0.0-1.0 in addition to yes, no where the number implies yes and that the overlapping should start at <trial>*number, while yes implies starting from trial 1
+- TAT: I answered that we can try starting after 40s which implies overlapping=0.66
+-TAT: having 6 overlapping distractors is too much, so limit number to 3
 ## 2026-11-09
 Only 15 letters before the notifications start, not 25—otherwise, it takes too long to get going.
 Could we make the notifications slightly larger? I want them to be more distracting; I just had the game playtested, and there weren't many errors.

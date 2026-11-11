@@ -200,20 +200,42 @@ function rampedDistractorRate(spawnedCount, totalItems, maxRatePerSec) {
 // ?displayms=), fade always uses NOTIF_FADE_MS. Returns the same
 // `{ stop() }` shape as startNotifCycle.
 //
-// `overlap` (default false, see progressive/index.html's ?overlap=yes):
-// when false, only one notification shows at a time, same as before --
-// each one occupies NOTIF_DISPLAY_MS+NOTIF_FADE_MS (4.5s) of "busy" time
-// where no new one can start, which is the ceiling TAT's feedback flagged
-// ("I don't see how rate can increase with a 4s display time"). When true,
-// multiple notifications can be visible at once (capped at the 6 available
-// zones), so a high maxRatePerSec can actually be reached instead of being
-// capped by that single-slot busy time.
+// `overlap` (default false, see progressive/index.html's ?overlap=):
+// when false (or omitted), only one notification shows at a time, same as
+// before -- each one occupies NOTIF_DISPLAY_MS+NOTIF_FADE_MS (4.5s) of
+// "busy" time where no new one can start, which is the ceiling TAT's
+// feedback flagged ("I don't see how rate can increase with a 4s display
+// time"). `true` allows more than one to be visible from trial 1 onward; a
+// 0..1 number (see overlapAllowedNow above) delays that until the given
+// fraction of trials has spawned, staging it in only near the end of a run
+// per the 2026-11-10 feedback. Either way, concurrency is capped at
+// MAX_CONCURRENT_NOTIFS, not the full zone count.
 //
 // `lastZoneId` persists across calls (not just while a wrapper is still
 // active) so even in non-overlap mode, the moment after a wrapper finishes
 // fading out, the next one still avoids repeating that same zone --
 // tracking only "currently occupied" zones would otherwise lose that
 // guarantee the instant a wrapper is removed.
+//
+// TAT (2026-11-10): 6 concurrent notifications (the full zone count) read as
+// too much in the overlap=yes playtest -- cap concurrency on its own terms,
+// independent of how many zones happen to exist.
+const MAX_CONCURRENT_NOTIFS = 3;
+
+// `overlap` (see progressive/index.html's ?overlap=): `true` allows overlap
+// from trial 1 (unchanged); a number in 0..1 allows it only once that
+// fraction of totalItems has spawned (TAT, 2026-11-10: tried 0.66, ~40s into
+// a 50-trial run, after an overlap=yes playtest felt like too much overlap
+// too soon); anything else (false, absent, out-of-range) never allows it,
+// same as the original yes/no-only behavior.
+function overlapAllowedNow(overlap, spawnedCount, totalItems) {
+  if (overlap === true) return true;
+  if (typeof overlap === 'number' && overlap > 0 && overlap <= 1) {
+    return totalItems > 0 && spawnedCount >= totalItems * overlap;
+  }
+  return false;
+}
+
 function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1.5, pollMs = 250, displayMs = NOTIF_DISPLAY_MS, overlap = false } = {}) {
   let activeWrappers = new Set();
   let lastZoneId = null;
@@ -238,8 +260,8 @@ function startProgressiveNotifCycle(mountNext, engine, { maxRatePerSec = 1.5, po
   };
 
   pollTimer = setInterval(() => {
-    if (!overlap && activeWrappers.size > 0) return;
-    if (activeWrappers.size >= NOTIF_ZONE_IDS.length || engine.totalItems <= 0) return;
+    if (!overlapAllowedNow(overlap, engine.spawnedCount, engine.totalItems) && activeWrappers.size > 0) return;
+    if (activeWrappers.size >= MAX_CONCURRENT_NOTIFS || engine.totalItems <= 0) return;
     const rate = rampedDistractorRate(engine.spawnedCount, engine.totalItems, maxRatePerSec);
     if (Math.random() < rate * (pollMs / 1000)) showNext();
   }, pollMs);

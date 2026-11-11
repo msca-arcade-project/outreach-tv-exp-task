@@ -87,11 +87,26 @@
     const displayMsParam = parseFloat(params.get('displayms'));
     const displayMsOverride = Number.isFinite(displayMsParam) && displayMsParam > 0 ? displayMsParam : undefined;
 
-    // ?overlap=yes lets more than one notification be visible at once
-    // (capped at the 6 available zones), so the plateau rate can actually
-    // be reached instead of being capped by the single-slot busy time;
-    // anything else, including no param, keeps the one-at-a-time default.
-    const overlapOverride = params.get('overlap') === 'yes';
+    // ?overlap=yes lets more than one notification be visible at once from
+    // trial 1 (capped at MAX_CONCURRENT_NOTIFS -- shared/notifications.js),
+    // so the plateau rate can actually be reached instead of being capped
+    // by the single-slot busy time. ?overlap=0.66 (a number in 0..1) stages
+    // that in instead: no overlap until that fraction of trials has
+    // spawned, then overlap allowed from there on -- TAT, 2026-11-10, after
+    // the TV team found overlap=yes felt like too much too soon but still
+    // wanted multiple notifications possible near the end. Absent, 'no', or
+    // any non-numeric/out-of-range value keeps the original never-overlap
+    // default, same as every other param here.
+    const overlapParam = params.get('overlap');
+    let overlapOverride = false;
+    if (overlapParam === 'yes') {
+      overlapOverride = true;
+    } else if (overlapParam !== null) {
+      const overlapFrac = parseFloat(overlapParam);
+      if (Number.isFinite(overlapFrac) && overlapFrac > 0 && overlapFrac <= 1) {
+        overlapOverride = overlapFrac;
+      }
+    }
 
     const soundEngine = new SoundEngine();
 
